@@ -1,0 +1,8 @@
+{
+  "id": "my-pet-plugin",
+  "name": "我的插件",
+  "version": "0.1.0",
+  "kind": ["tool"],
+  "permissions": ["storage", "pet"],
+  "entry": { "tool": "index.js" }
+}

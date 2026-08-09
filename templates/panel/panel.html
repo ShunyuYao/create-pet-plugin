@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <title>我的面板</title>
+  <style>
+    body { margin: 0; padding: 16px; font-family: -apple-system, "PingFang SC", sans-serif; }
+    button { padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <h3>我的面板</h3>
+  <p>点击次数：<span id="n">0</span></p>
+  <button id="add">加一</button>
+  <script>
+    // panel 里的 pet 由宿主 preload 注入。注意：panel 上下文可用的命名空间
+    // 少于 tool 上下文，详见 @pet/plugin-types 的说明。
+    const el = document.getElementById('n');
+    pet.storage.get('clicks', 0).then((v) => { el.textContent = v; });
+    document.getElementById('add').onclick = async () => {
+      const next = (await pet.storage.get('clicks', 0)) + 1;
+      await pet.storage.set('clicks', next);
+      el.textContent = next;
+    };
+  </script>
+</body>
+</html>

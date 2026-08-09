@@ -1,0 +1,15 @@
+{
+  "name": "create-pet-plugin",
+  "version": "0.0.0-experimental",
+  "description": "生成桌宠（吐梨邦）插件骨架：manifest 模板 + tool/panel/dashboard-card 三样板",
+  "bin": { "create-pet-plugin": "index.js" },
+  "files": ["index.js", "templates", "README.md"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShunyuYao/create-pet-plugin.git"
+  },
+  "dependencies": {
+    "@pet/plugin-types": "github:ShunyuYao/pet-plugin-types"
+  }
+}

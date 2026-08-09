@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { margin: 0; padding: 12px; font-family: -apple-system, "PingFang SC", sans-serif; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <strong>我的卡片</strong>
+  <div id="body">加载中…</div>
+  <script>
+    // 看板卡片在隔离 iframe 里加载，可用命名空间同样少于 tool 上下文。
+    pet.storage.get('note', '还没有内容').then((v) => {
+      document.getElementById('body').textContent = v;
+    });
+  </script>
+</body>
+</html>
