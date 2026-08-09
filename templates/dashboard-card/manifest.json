@@ -2,7 +2,8 @@
   "id": "my-pet-card",
   "name": "我的看板卡片",
   "version": "0.1.0",
+  "apiVersion": 1,
   "kind": ["dashboard-card"],
-  "permissions": ["storage"],
+  "permissions": ["storage", "pet", "dashboard"],
   "entry": { "dashboardBlock": { "src": "card.html" } }
 }

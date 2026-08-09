@@ -2,7 +2,8 @@
   "id": "my-pet-panel",
   "name": "我的面板",
   "version": "0.1.0",
+  "apiVersion": 1,
   "kind": ["panel"],
-  "permissions": ["storage"],
+  "permissions": ["storage", "pet", "ui"],
   "entry": { "panel": { "src": "panel.html", "width": 420, "height": 520, "title": "我的面板" } }
 }

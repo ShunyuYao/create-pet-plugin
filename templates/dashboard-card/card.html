@@ -4,15 +4,38 @@
   <meta charset="utf-8" />
   <style>
     body { margin: 0; padding: 12px; font-family: -apple-system, "PingFang SC", sans-serif; font-size: 13px; }
+    #body { margin: 6px 0 8px; color: #333; }
+    button { padding: 4px 10px; font-size: 12px; }
   </style>
 </head>
 <body>
   <strong>我的卡片</strong>
   <div id="body">加载中…</div>
+  <button id="bump">记一笔</button>
   <script>
-    // 看板卡片在隔离 iframe 里加载，可用命名空间同样少于 tool 上下文。
-    pet.storage.get('note', '还没有内容').then((v) => {
-      document.getElementById('body').textContent = v;
+    // 看板卡片在隔离 iframe 里加载（plugin:// 源），pet 由宿主 preload 注入。
+    //
+    // 上下文提醒：block 上下文**没有** tools / scheduler / net / secrets / files，
+    // 也没有 ui.openPanel / ui.closePanel（区块不拥有窗口）。它独有一个顶层常量
+    // pet.context === 'dashboard-block'，可用来在共用代码里分支。
+    // 完整能力矩阵见本仓库 README 的「上下文能力矩阵」一节。
+    const body = document.getElementById('body');
+
+    async function render() {
+      const n = await pet.storage.get('count', 0);
+      body.textContent = n > 0 ? `已记录 ${n} 次` : '还没有内容';
+      // 内容变高变矮后主动报高度，宿主据此调整卡片容器（dashboard.* 仅 tool/block 有）
+      pet.dashboard.requestHeight(document.body.scrollHeight);
+    }
+
+    document.getElementById('bump').onclick = async () => {
+      await pet.storage.set('count', (await pet.storage.get('count', 0)) + 1);
+      await render();
+    };
+
+    render().then(() => {
+      // 首帧内容就绪后通知宿主，宿主收到才撤掉卡片的加载态
+      pet.dashboard.notifyReady();
     });
   </script>
 </body>

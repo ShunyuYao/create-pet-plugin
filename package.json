@@ -1,7 +1,7 @@
 {
   "name": "create-pet-plugin",
-  "version": "0.0.0-experimental",
-  "description": "生成桌宠（吐梨邦）插件骨架：manifest 模板 + tool/panel/dashboard-card 三样板",
+  "version": "1.0.0-rc.1",
+  "description": "生成桌宠（吐梨邦）插件骨架：manifest 模板 + tool/panel/dashboard-card 三样板，对应 apiVersion 1",
   "bin": { "create-pet-plugin": "index.js" },
   "files": ["index.js", "templates", "README.md"],
   "license": "MIT",
@@ -11,5 +11,12 @@
   },
   "dependencies": {
     "@pet/plugin-types": "github:ShunyuYao/pet-plugin-types"
+  },
+  "scripts": {
+    "test": "node test/generate-test.js"
+  },
+  "petSdk": {
+    "apiVersion": 1,
+    "note": "三份样板只调用 A 档（已冻结）能力，manifest 均声明 apiVersion 1。分档以 @pet/plugin-types 为准，方法清单以宿主 demo/core/plugin-runtime/sdk-surface.js 为准。"
   }
 }

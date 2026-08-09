@@ -30,8 +30,9 @@ create-pet-plugin — 生成桌宠（吐梨邦）插件骨架
   --kind   ${KINDS.join(' | ')}（默认 tool）
   --help   显示本帮助
 
-生成后把该目录通过桌宠「设置 → 插件 → 开发者模式 → 旁加载」装入调试。
-⚠️ 旁加载的插件将获得对你电脑的完全访问权限，仅安装你完全信任的来源。
+生成后把该目录通过桌宠「设置 → 插件 → 开发者模式 → 从文件夹安装」装入调试。
+⚠️ 旁加载不经过任何审核，这类插件将获得对你这台电脑的完全访问权限
+   （读写文件含密码文件、联网外发、执行任意程序），仅安装你完全信任的来源。
 `);
 }
 
@@ -67,20 +68,37 @@ function main() {
   const mf = path.join(dest, 'manifest.json');
   const m = JSON.parse(fs.readFileSync(mf, 'utf8'));
   const base = path.basename(dest);
-  if (/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(base) && !base.includes('..')) {
+  const idOk = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(base) && !base.includes('..');
+  if (idOk) {
     m.id = base;
     m.name = base;
     fs.writeFileSync(mf, JSON.stringify(m, null, 2) + '\n');
   }
 
-  console.log(`✓ 已生成 ${args.kind} 插件骨架：${dest}`);
+  // 生成插件自己的 package.json：只为在编辑器里拿到 @pet/plugin-types 的补全。
+  // 宿主加载插件读的是 manifest.json，不读这份；删掉它插件照样能跑。
+  // 该包暂不发 npm，故用 git 依赖。
+  fs.writeFileSync(path.join(dest, 'package.json'), JSON.stringify({
+    name: idOk ? base : 'my-pet-plugin',
+    version: m.version || '0.1.0',
+    private: true,
+    description: `桌宠 ${args.kind} 插件`,
+    devDependencies: { '@pet/plugin-types': 'github:ShunyuYao/pet-plugin-types' },
+  }, null, 2) + '\n');
+
+  console.log(`✓ 已生成 ${args.kind} 插件骨架（apiVersion 1）：${dest}`);
   console.log('');
   console.log('下一步：');
-  console.log('  1. 打开桌宠「设置 → 插件」，开启「开发者模式」');
-  console.log(`  2. 用旁加载入口选择该目录：${dest}`);
+  console.log('  1. 想要类型补全就先装依赖：npm install');
+  console.log('  2. 打开桌宠「设置 → 插件」，开启「开发者模式」');
+  console.log(`  3. 用「从文件夹安装」入口选择该目录：${dest}`);
   console.log('');
-  console.log('  ⚠️ 旁加载的插件将获得对你电脑的完全访问权限（读写文件、联网、');
-  console.log('     执行程序），仅安装你完全信任的来源。');
+  console.log('  ⚠️ 旁加载不经过任何审核。这类插件将获得对你这台电脑的完全访问权限：');
+  console.log('     · 读写你电脑上的文件，包括文档、照片和保存过的密码文件');
+  console.log('     · 连接互联网，把读到的任何内容发送出去');
+  console.log('     · 执行任意程序，安装后可持续在后台运行');
+  console.log('     只安装你完全信任的来源。宿主无法拦截、无法撤销已经发生的破坏，');
+  console.log('     风险由你自己承担。');
 }
 
 main();

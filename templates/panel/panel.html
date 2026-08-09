@@ -5,23 +5,44 @@
   <title>我的面板</title>
   <style>
     body { margin: 0; padding: 16px; font-family: -apple-system, "PingFang SC", sans-serif; }
-    button { padding: 6px 12px; }
+    button { padding: 6px 12px; margin-right: 8px; }
+    #log { margin-top: 12px; color: #666; font-size: 12px; min-height: 1em; }
   </style>
 </head>
 <body>
   <h3>我的面板</h3>
   <p>点击次数：<span id="n">0</span></p>
   <button id="add">加一</button>
+  <button id="say">让宠物说话</button>
+  <button id="close">关闭面板</button>
+  <div id="log"></div>
   <script>
-    // panel 里的 pet 由宿主 preload 注入。注意：panel 上下文可用的命名空间
-    // 少于 tool 上下文，详见 @pet/plugin-types 的说明。
+    // panel 里的 pet 由宿主 preload 注入，无需 import。
+    //
+    // 上下文提醒：panel 上下文**没有** tools / scheduler / net / secrets / dashboard —
+    // 这是有意设计（窗口关掉就失活，不能持有 handler；渲染层不给密钥和裸 fetch）。
+    // 完整能力矩阵见本仓库 README 的「上下文能力矩阵」一节。
+    //
+    // 插件 panel 由宿主强制加 CSP：script-src 'self' 'unsafe-inline'，不含任何远端源，
+    // 所以内联 <script> 可用，但不能从 CDN 拉脚本——依赖请随插件目录一起打包。
     const el = document.getElementById('n');
+    const log = document.getElementById('log');
+
     pet.storage.get('clicks', 0).then((v) => { el.textContent = v; });
+
     document.getElementById('add').onclick = async () => {
       const next = (await pet.storage.get('clicks', 0)) + 1;
       await pet.storage.set('clicks', next);
       el.textContent = next;
     };
+
+    document.getElementById('say').onclick = async () => {
+      await pet.pet.bubble(`你已经点了 ${el.textContent} 次`);
+      log.textContent = '已让宠物冒泡';
+    };
+
+    // ui.closePanel 在 tool 与 panel 上下文可用（block 上下文没有）
+    document.getElementById('close').onclick = () => pet.ui.closePanel();
   </script>
 </body>
 </html>
