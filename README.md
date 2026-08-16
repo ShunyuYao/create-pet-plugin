@@ -68,6 +68,12 @@ manifest 的 `id` 与 `name`。
 | `services` | `get` | A | A | A |
 | `settings` | `get` | A | A | A |
 | `friends` | `me` `list` `isFriend` `avatar` | A | A | A |
+
+> ⚠️ **宿主 v4 起 `friends` 的主键是账号 UID，不再是 `petId`。**
+> `me()` 与 `list()` 的每项都新增 `uid` 字段（未登录/存量未迁移时为空串），
+> `isFriend(key)` 两种键都接受。插件里取寻址键统一写 `f.uid || f.petId`。
+> 详见 [pet-plugin-types](https://github.com/ShunyuYao/pet-plugin-types#%EF%B8%8F-v4-破坏性变更好友主键从-petid-改为账号-uid)。
+
 | `dashboard` | `requestHeight` `notifyReady` | A | — | A |
 | `tools` | `register` | A | — | — |
 | `ai` | `chat` | B | B | B |
