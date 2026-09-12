@@ -1,6 +1,6 @@
 {
   "name": "create-pet-plugin",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "生成桌宠（吐梨邦）插件骨架：manifest 模板 + tool/panel/dashboard-card 三样板，对应 apiVersion 1",
   "bin": {
     "create-pet-plugin": "index.js"

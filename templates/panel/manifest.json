@@ -3,6 +3,7 @@
   "name": "我的面板",
   "version": "0.1.0",
   "apiVersion": 1,
+  "updateReminders": false,
   "kind": ["panel"],
   "permissions": ["storage", "pet", "ui"],
   "entry": { "panel": { "src": "panel.html", "width": 420, "height": 520, "title": "我的面板" } }

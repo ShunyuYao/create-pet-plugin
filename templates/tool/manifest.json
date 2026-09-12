@@ -3,6 +3,7 @@
   "name": "我的插件",
   "version": "0.1.0",
   "apiVersion": 1,
+  "updateReminders": false,
   "kind": ["tool"],
   "permissions": ["storage", "pet", "tools", "scheduler"],
   "entry": { "tool": "index.js" }

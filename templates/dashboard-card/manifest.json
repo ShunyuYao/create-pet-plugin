@@ -3,6 +3,7 @@
   "name": "我的看板卡片",
   "version": "0.1.0",
   "apiVersion": 1,
+  "updateReminders": false,
   "kind": ["dashboard-card"],
   "permissions": ["storage", "pet", "dashboard"],
   "entry": { "dashboardBlock": { "src": "card.html" } }

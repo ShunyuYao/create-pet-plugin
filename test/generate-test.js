@@ -52,6 +52,7 @@ try {
     for (const f of ['id', 'name', 'version', 'apiVersion', 'kind', 'permissions', 'entry']) {
       check(m[f] !== undefined, `${kind}: manifest 含 ${f}`);
     }
+    check(m.updateReminders === false, `${kind}: 默认不参与主动更新提醒`);
     check(m.apiVersion === 1, `${kind}: apiVersion === 1`);
     check(m.id === `sample-${kind}`, `${kind}: id 已按目录名填为 sample-${kind}`);
 
