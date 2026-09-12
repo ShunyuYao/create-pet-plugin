@@ -53,41 +53,85 @@ manifest 的 `id` 与 `name`。
 
 标记：**A** = 已冻结；**B** = `@experimental`；空 = 该上下文不可用。
 
+<!-- sdk-surface:start -->
 | 命名空间 | 方法 | tool | panel | dashboard-card |
 |---|---|:--:|:--:|:--:|
-| `storage` | `get` `set` `delete` `all` | A | A | A |
-| `secrets` | `get` `set` `delete` | A | — | — |
-| `pet` | `bubble` `playAnim` `speak` | A | A | A |
-| `ui` | `dialog` `copyText` | A | A | A |
+| `storage` | `get` | A | A | A |
+| `storage` | `set` | A | A | A |
+| `storage` | `delete` | A | A | A |
+| `storage` | `all` | A | A | A |
+| `secrets` | `get` | A | — | — |
+| `secrets` | `set` | A | — | — |
+| `secrets` | `delete` | A | — | — |
+| `pet` | `bubble` | A | A | A |
+| `pet` | `playAnim` | A | A | A |
+| `pet` | `speak` | A | A | A |
+| `badge` | `set` | B | — | — |
+| `badge` | `clear` | B | — | — |
+| `ui` | `dialog` | A | A | A |
+| `ui` | `taskCheck` | B | B | B |
+| `ui` | `copyText` | A | A | A |
 | `ui` | `openPanel` | A | — | — |
 | `ui` | `closePanel` | A | A | — |
-| `ui` | `taskCheck` | B | B | B |
-| `events` | `on` `emit` | A | A | A |
-| `scheduler` | `every` `daily` `cancel` | A | — | — |
+| `ui` | `setPanelPinned` | B | B | — |
+| `events` | `on` | A | A | A |
+| `events` | `emit` | A | A | A |
+| `scheduler` | `every` | A | — | — |
+| `scheduler` | `daily` | A | — | — |
+| `scheduler` | `cancel` | A | — | — |
 | `net` | `fetch` | A | — | — |
 | `services` | `get` | A | A | A |
 | `settings` | `get` | A | A | A |
-| `friends` | `me` `list` `isFriend` `avatar` | A | A | A |
-
-> ⚠️ **宿主 v4 起 `friends` 的主键是账号 UID，不再是 `petId`。**
-> `me()` 与 `list()` 的每项都新增 `uid` 字段（未登录/存量未迁移时为空串），
-> `isFriend(key)` 两种键都接受。插件里取寻址键统一写 `f.uid || f.petId`。
-> 详见 [pet-plugin-types](https://github.com/ShunyuYao/pet-plugin-types#%EF%B8%8F-v4-破坏性变更好友主键从-petid-改为账号-uid)。
-
-| `dashboard` | `requestHeight` `notifyReady` | A | — | A |
-| `tools` | `register` | A | — | — |
 | `ai` | `chat` | B | B | B |
-| `files` | `pick` `stat` `open` `list` `remove` `pin` `unpin` | B | B | — |
-| `activity` | `getLatest` `connectionInfo` | B | B | B |
+| `files` | `pick` | B | B | — |
+| `files` | `stat` | B | B | — |
+| `files` | `open` | B | B | — |
+| `files` | `list` | B | B | — |
+| `files` | `revoke` | B | B | — |
+| `files` | `pin` | B | B | — |
+| `files` | `unpin` | B | B | — |
+| `clipboard` | `startHistory` | B | — | — |
+| `clipboard` | `stopHistory` | B | — | — |
+| `clipboard` | `query` | B | B | — |
+| `clipboard` | `read` | B | B | — |
+| `clipboard` | `copy` | B | B | — |
+| `clipboard` | `markReferenced` | B | B | — |
+| `clipboard` | `remove` | B | B | — |
+| `clipboard` | `clearHistory` | B | B | — |
+| `errands` | `composeFile` | B | B | — |
+| `friends` | `me` | A | A | A |
+| `friends` | `list` | A | A | A |
+| `friends` | `isFriend` | A | A | A |
+| `friends` | `avatar` | A | A | A |
+| `activity` | `getLatest` | B | B | B |
+| `activity` | `connectionInfo` | B | B | B |
+| `dashboard` | `requestHeight` | A | — | A |
+| `dashboard` | `notifyReady` | A | — | A |
+| `tools` | `register` | A | — | — |
 | `calendar` | `registerProvider` | B | — | — |
-| （顶层常量） | `pet.context` | — | — | A（值为 `'dashboard-block'`） |
+| `(root)` | `context` | — | — | A |
+<!-- sdk-surface:end -->
 
 三种上下文的精确类型分别是 `PetTool` / `PetPanel` / `PetBlock`，编辑器里越界访问会直接
-报错。**返回值一律按 `Promise` 处理**：宿主内部有同步与 RPC 两条实现路径，`await` 在两
-种形态下都正确。
+报错。普通 SDK 调用返回 Promise；桥内注册方法返回 void，以对应类型签名为准。
+内置和外部工具插件都经 utilityProcess/RPC 调用宿主。
 
 `panel` 与 `dashboard-card` 由宿主强制加 CSP：`script-src 'self' 'unsafe-inline'`，
 不含任何远端源——内联 `<script>` 可用，但**不能从 CDN 拉脚本**，依赖请随插件目录打包。
+
+## 新增实验能力与最低宿主版本
+
+本矩阵与宿主 0.19.1 源码及更新后的 `@pet/plugin-types` 对齐；模板只使用基础 A 档能力，
+不会默认开启剪贴板历史或占用徽标。
+
+- `badge.set/clear` 仅 tool，需 `pet` 权限；`onClick: 'openPanel'` 还需 `ui` 和 panel 入口。
+  徽标以宿主 0.19.1 为基线，旧版应先探测可用性，或声明实际最低宿主版本。
+- `ui.setPanelPinned` 仅 tool/panel；`clipboard` 需同名权限，轮询启停仅 tool。
+- `errands.composeFile` 需 `errands` 权限；剪贴板图片来源另需 `clipboard`，收件人由用户选择。
+- `files.revoke` 是撤销授权，不删除磁盘文件；已没有 `files.remove` 方法。
+- `friends` 以账号 UID 为主键，存量/游客情形用 `uid || petId`。
+- manifest 可声明 `activation: 'opt-in'` 和 `entry.panel.transparent`；前者是插件启用策略，
+  不是更新开关。本轮未新增任何自动更新接口或参与字段。
 
 ## 本地调试
 
@@ -125,6 +169,20 @@ npm**，用 git 依赖引用：
 
 样板已通过 JSDoc `import('@pet/plugin-types')` 挂上类型，纯 JS 也能在 VS Code 里拿到
 补全与越界检查，不必改写成 TypeScript。
+
+## 验证与交付
+
+```sh
+npm test
+PET_PLUGIN_HOST_DIR=/path/to/desktop-pet/demo \
+PET_PLUGIN_TYPES_DIR=/path/to/pet-plugin-types npm run test:delivery
+```
+
+交付前先在类型包执行 `npm ci`，并使用与当前宿主匹配的类型包提交。
+`npm test` 检查基础生成；`test:delivery` 必须提供两个仓库路径，缺失直接失败，不允许 SKIP。
+它检查实际生成的三种 manifest、用公开类型严格编译生成的 tool，并核对本 README 的完整能力矩阵。
+这比“能生成文件”覆盖更强：缺类型、模板不通过类型检查、文档漏方法或上下文写错都会失败。
+交付时先锁定宿主与类型包提交；离线测试不会自行联网拉取依赖。
 
 ## 相关
 

@@ -1,9 +1,15 @@
 {
   "name": "create-pet-plugin",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "生成桌宠（吐梨邦）插件骨架：manifest 模板 + tool/panel/dashboard-card 三样板，对应 apiVersion 1",
-  "bin": { "create-pet-plugin": "index.js" },
-  "files": ["index.js", "templates", "README.md"],
+  "bin": {
+    "create-pet-plugin": "index.js"
+  },
+  "files": [
+    "index.js",
+    "templates",
+    "README.md"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +19,9 @@
     "@pet/plugin-types": "github:ShunyuYao/pet-plugin-types"
   },
   "scripts": {
-    "test": "node test/generate-test.js"
+    "test": "npm run test:generate",
+    "test:generate": "node test/generate-test.js",
+    "test:delivery": "node test/generate-test.js --require-host"
   },
   "petSdk": {
     "apiVersion": 1,

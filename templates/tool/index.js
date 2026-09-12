@@ -9,6 +9,7 @@
  */
 
 // 定时器 id 与 pet 句柄存在模块作用域，供 deactivate 清理
+/** @type {string | null} */
 let timerId = null;
 /** @type {PetTool | null} */
 let sdk = null;
