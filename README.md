@@ -237,7 +237,7 @@ All three methods take no arguments and return `Promise<AppearanceState>`. They 
 
 Errors in `Error.message`: `permission_denied`, `unsupported_context`, `appearance_unavailable`, `plugin_inactive`, `invalid_request`, `method_not_found`, `persistence_failed`. Only the owning active asset can change its appearance; dashboard blocks have no appearance API. Handle errors visibly and offer retry.
 
-外观 API 的类型与说明已纳入本仓库主分支，对应宿主实现已完成；目标兼容构建为 **0.23.0 受邀测试版**，安装包实测仍待完成。`apiVersion: 1` 不能代表旧宿主已支持；先探测 `pet.appearance?.getState`，缺失时提示需支持该功能的测试版本。实测完成前，不能把 0.23.0 宣称为已验证的最低支持版本。宿主仅通过受邀测试渠道分发，本轮没有 npm 发布。The main branch includes the appearance API definitions/documentation for the completed host implementation. Host 0.23.0 is the target invitation-only test build; packaged-build validation is still pending. Feature-detect older hosts. This is not a public host release or an npm release, and a validated minimum host version has not yet been established.
+外观 API 的说明已纳入本仓库主分支，新增类型见 `pet-plugin-types` 的主分支，对应宿主实现已完成；目标兼容构建为 **0.23.0 受邀测试版**，安装包实测仍待完成。`apiVersion: 1` 不能代表旧宿主已支持；先探测 `pet.appearance?.getState`，缺失时提示需支持该功能的测试版本。实测完成前，不能把 0.23.0 宣称为已验证的最低支持版本。宿主仅通过受邀测试渠道分发，本轮没有 npm 发布。The main branch includes appearance API documentation for the completed host implementation; the definitions are supplied by the main branch of `pet-plugin-types`. Host 0.23.0 is the target invitation-only test build; packaged-build validation is still pending. Feature-detect older hosts. This is not a public host release or an npm release, and a validated minimum host version has not yet been established.
 
 ```js
 // asset+panel manifest: kind: ['asset', 'panel'], permissions: ['ui', 'appearance']
