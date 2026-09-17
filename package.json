@@ -1,7 +1,7 @@
 {
   "name": "create-pet-plugin",
   "version": "1.0.0-rc.3",
-  "description": "生成桌宠（吐梨邦）插件骨架：manifest 模板 + tool/panel/dashboard-card 三样板，对应 apiVersion 1",
+  "description": "生成桌宠（吐梨邦）插件骨架：tool/panel/dashboard-card 与实验性纯数据 theme 样板，对应 apiVersion 1",
   "bin": {
     "create-pet-plugin": "index.js"
   },
@@ -25,6 +25,6 @@
   },
   "petSdk": {
     "apiVersion": 1,
-    "note": "三份样板只调用 A 档（已冻结）能力，manifest 均声明 apiVersion 1。分档以 @pet/plugin-types 为准，方法清单以宿主 demo/core/plugin-runtime/sdk-surface.js 为准。"
+    "note": "tool/panel/dashboard-card 样板只调用 A 档能力；theme 是未发布的实验性纯数据格式，不增加 SDK 方法。所有样板声明 apiVersion 1，不代表旧宿主支持新增能力。"
   }
 }

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "target": "chat",
+  "colors": {
+    "canvas": "#efece5",
+    "panel": "#fffaf0",
+    "ink": "#373c31",
+    "muted": "#7a806e",
+    "surface": "#f0ecdf",
+    "card": "#fffdf6",
+    "line": "#e1dfd0",
+    "accent": "#456550",
+    "accentInk": "#fffdf7",
+    "tint": "#e7edde",
+    "success": "#54795e",
+    "error": "#a8513f",
+    "errorSurface": "#f9e7dd",
+    "file": "#e6ddca",
+    "fileInk": "#66583d"
+  },
+  "radius": 18,
+  "bubbleRadius": 15,
+  "texture": "paper"
+}

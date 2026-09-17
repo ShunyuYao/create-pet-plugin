@@ -4,7 +4,7 @@
 
 > ## SDK 契约已冻结在 `apiVersion: 1`
 >
-> 生成的三份 manifest 都声明 `"apiVersion": 1`，样板代码只调用 **A 档（已冻结）** 能力：
+> 三种基础模板都声明 `"apiVersion": 1`，样板代码只调用 **A 档（已冻结）** 能力：
 > 同一 `apiVersion` 内只加不改不删。标 `@experimental` 的 B 档能力可以用，但签名/语义
 > 可能在任一 apiVersion 变更且不走废弃流程；判为 C 档的能力不作为对外契约，样板不碰。
 > 分档定义见 [@pet/plugin-types](https://github.com/ShunyuYao/pet-plugin-types) 的 README。
@@ -21,18 +21,19 @@ npx github:ShunyuYao/create-pet-plugin my-panel --kind panel
 npx github:ShunyuYao/create-pet-plugin my-card  --kind dashboard-card
 ```
 
-`--kind` 可选 `tool`（默认）/ `panel` / `dashboard-card`。目录名会自动填进
+`--kind` 可选 `tool`（默认）/ `panel` / `dashboard-card`；此开发分支另支持实验性的 `theme`（见文末，尚未发布）。目录名会自动填进
 manifest 的 `id` 与 `name`。
 
-## 三种样板
+## 样板
 
 | kind | 生成内容 | 样板做了什么 |
 |---|---|---|
 | `tool` | `manifest.json` + `index.js` | 注册 `say_hello` 工具供宿主 Agent 调用，起一个定时提醒，订阅 `pet:clicked`，`deactivate` 里取消定时器 |
 | `panel` | `manifest.json` + `panel.html` | 独立面板窗口：计数器读写 `storage`、让宠物冒泡、`ui.closePanel` 自关 |
 | `dashboard-card` | `manifest.json` + `card.html` | 看板卡片：读写 `storage` 并按内容 `dashboard.requestHeight` / `notifyReady` |
+| `theme`（未发布） | `manifest.json` + `theme.json` | 纯数据聊天外观，无可执行入口；由用户在设置中选择 |
 
-三份 manifest 模板都已用宿主的 `demo/core/plugin-runtime/manifest.js` 实测校验通过
+基础与主题 manifest 模板都已用对应宿主的 `demo/core/plugin-runtime/manifest.js` 实测校验通过
 （含 `apiVersion` 字段校验）。
 
 ## manifest 字段
@@ -43,7 +44,7 @@ manifest 的 `id` 与 `name`。
 | `name` | ✅ | 展示名 |
 | `version` | ✅ | 必须是 `x.y.z` |
 | `apiVersion` | 建议 | 按哪一代 SDK 语义写的。当前 `1`；缺省按宿主最低兼容版本处理，声明了就必须是 ≥1 的整数 |
-| `kind` | ✅ | `tool` / `panel` / `asset` / `skill` / `settings` / `service` / `dashboard-card` 的非空子集 |
+| `kind` | ✅ | 普通插件为 `tool` / `panel` / `asset` / `skill` / `settings` / `service` / `dashboard-card` 的非空子集；实验主题只能为 `["theme"]` |
 | `permissions` | — | 权限名数组，见 `@pet/plugin-types` 的 `PluginPermission`。联网必须逐域名写 `net:api.example.com`，没有宽泛的 `net` |
 | `minHostVersion` | — | 要求的最低宿主版本 |
 | `entry` | 视 kind | `kind` 含 `tool` 要 `entry.tool`；含 `panel` 要 `entry.panel.src`；含 `dashboard-card` 要 `entry.dashboardBlock.src`；含 `service` 要 `provides.service` |
@@ -264,3 +265,25 @@ The query returns the current appearance's available clips, including locally re
 Cross-machine appearance v2 permits the fourteen listed states with explicit loop flags; idle and walk are required. Legacy v1 two-state packages remain supported. Unsupported receivers fail preparation before departure. Only validated static PNG frames and animation metadata are transferred, never plugin code. Other visitor action slots can be decoded without a new automatic behavior: actual visitor triggers follow its existing arrival, speaking, dragging, delivery and edge lifecycle.
 
 查询沿用现有 SDK 桥参数归一化：JavaScript 多传的参数会被零参数方法忽略，TypeScript 签名在编译时拒绝它们；原始主进程协议载荷若带参数则拒绝 invalid_request。The existing JavaScript bridge normalizes this method to zero arguments (extra caller arguments are ignored); TypeScript rejects extra arguments at compile time. A malformed raw host protocol request with arguments is rejected with invalid_request.
+
+## 聊天主题包 v1 / Chat themes (experimental, unreleased)
+
+本节描述开发分支的格式，最低已发布宿主版本尚未确定，不能据类型或文档更新宣称既有宿主支持。主题包由用户在设置中选择，安装不会自动应用，不读取聊天内容，不运行主题脚本，不增加 tool/panel/block 方法。
+
+This data-only format is experimental and unreleased. No released host compatibility is claimed. Installing registers a choice; the user selects it in host settings. Themes cannot read chat content or execute code, and add no SDK methods. Raw ui.injectStyle remains closed.
+
+manifest 使用 kind: ['theme']、permissions: ['ui:theme']，entry 仅有 theme 字段，值为包内相对路径（推荐 theme.json）。不接受其他入口、services、provides 或 activation。
+
+Only the theme kind and ui:theme permission are accepted; entry contains only a relative theme path. Service, activation and executable entry declarations are rejected.
+
+主题 JSON 精确包含 schemaVersion: 1、target: 'chat'、colors、radius、bubbleRadius、texture 六个字段，最多 16 KiB。colors 必须提供 canvas、panel、ink、muted、surface、card、line、accent、accentInk、tint、success、error、errorSurface、file、fileInk，每值为 #RRGGBB。两个圆角为 0–28 整数，texture 为 plain / paper / grid。未知字段、脚本、任意 CSS、URL、越界路径均拒绝。
+
+JSON has exactly six fields and fifteen #RRGGBB color slots, integer radii 0–28, and a plain/paper/grid texture preset. The host enforces the 16 KiB limit, exact values and path containment. TypeScript checks do not replace runtime validation.
+
+切换保留草稿和会话，重启恢复有效选择；卸载、停用或失效恢复默认并解释原因，重新安装不自动选中。保存失败保留现有选择，包更新失败保留之前可用版本。
+
+Switching preserves drafts and conversation state. Valid choices survive restart. Removal, disabling or invalidation restores the default with a reason; reinstalling does not automatically select the package. Failed selection writes keep the current choice; failed updates retain the previous working version.
+
+在包含此改动的源码检出中运行 `node index.js my-theme --kind theme`。生成 manifest.json、theme.json、package.json 与说明，不生成可执行入口。普通模板的权限不变。此用法尚未发布到正式 CLI。
+
+From a checkout containing this change, run `node index.js my-theme --kind theme`. It generates data and documentation only. Existing templates keep their permissions. This is an unreleased source feature.

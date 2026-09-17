@@ -3,12 +3,12 @@
  * create-pet-plugin — 生成桌宠插件骨架
  *
  * 用法：
- *   npx github:ShunyuYao/create-pet-plugin <目录> [--kind tool|panel|dashboard-card]
+ *   npx github:ShunyuYao/create-pet-plugin <目录> [--kind tool|panel|dashboard-card|theme]
  */
 const fs = require('node:fs');
 const path = require('node:path');
 
-const KINDS = ['tool', 'panel', 'dashboard-card'];
+const KINDS = ['tool', 'panel', 'dashboard-card', 'theme'];
 
 function parseArgs(argv) {
   const args = { dir: null, kind: 'tool' };
@@ -29,6 +29,8 @@ create-pet-plugin — 生成桌宠（吐梨邦）插件骨架
 
   --kind   ${KINDS.join(' | ')}（默认 tool）
   --help   显示本帮助
+
+theme 是实验性、未发布的纯数据聊天主题格式，只在支持 theme v1 的测试宿主验证。
 
 生成后把该目录通过桌宠「设置 → 插件 → 开发者模式 → 从文件夹安装」装入调试。
 ⚠️ 旁加载不经过任何审核，这类插件将获得对你这台电脑的完全访问权限
@@ -89,6 +91,13 @@ function main() {
   console.log(`✓ 已生成 ${args.kind} 插件骨架（apiVersion 1）：${dest}`);
   console.log('');
   console.log('下一步：');
+  if (args.kind === 'theme') {
+    console.log('  1. 阅读生成目录里的 README.md；修改 theme.json 的颜色、圆角和背景预设');
+    console.log('  2. 确认测试宿主支持实验性的 theme v1；本格式尚未发布，不代表现有安装包支持');
+    console.log('  3. 在隔离测试宿主的「设置 → 插件」从文件夹安装，再由用户主动选择主题');
+    console.log('  安装不会自动应用。主题包只含数据，不执行插件代码，不开放 ui.injectStyle。');
+    return;
+  }
   console.log('  1. 想要类型补全就先装依赖：npm install');
   console.log('  2. 打开桌宠「设置 → 插件」，开启「开发者模式」');
   console.log(`  3. 用「从文件夹安装」入口选择该目录：${dest}`);

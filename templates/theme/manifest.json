@@ -1,0 +1,10 @@
+{
+  "id": "warm-paper",
+  "name": "暖纸手帐",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "kind": ["theme"],
+  "permissions": ["ui:theme"],
+  "entry": { "theme": "theme.json" },
+  "updateReminders": false
+}
