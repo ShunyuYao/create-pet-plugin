@@ -323,6 +323,12 @@ M1b 只创建 host；尚未发布的 M2 候选支持 `init.instance.kind:'visito
 
 M1b creates host instances only; the unreleased M2 candidate also binds visitors through the same three render methods. An authenticated visit channel carries immutable departure data and resources, without changing ordinary v1–v3 descriptors. Only a locally installed, authorized and data-compatible provider executes on the receiver. Peer plugin code and continuous RGBA frames are not transferred. Recall/departure cancels local grabbing or falling and cleans up the visitor session.
 
-A missing, unauthorized or incompatible provider uses ordinary actions with a notice; corrupt resources or failed preparation must fail explicitly. Supported realtime visits wait for ordinary-frame decoding and acknowledgement after drawing the first valid idle frame to the host preparation canvas before departure. This documents candidate requirements, not completed cross-machine or E2E validation. No new template, package publication, marketplace entry, minimum released host version or public host download is introduced.
+A missing, unauthorized or incompatible provider uses ordinary actions with a notice; corrupt resources or failed preparation must fail explicitly. Supported realtime visits wait for ordinary-frame decoding and acknowledgement after drawing the first valid idle frame to the host preparation canvas before departure. This documents candidate requirements, not a public release declaration; see the dated validation status below. No new template, package publication, marketplace entry, minimum released host version or public host download is introduced.
 
 交付时使用实际候选宿主与类型包路径运行 `test:delivery`；它经类型包检查器核对四列能力矩阵和 renderer 隔离契约，同时验证四种现有模板。没有相应依赖时不能将跳过记为通过。
+
+### 私有候选验证 / Private candidate validation
+
+2026-09-22 验证状态：私有 macOS arm64 候选的真实签名 ASAR 完成 168 项隐藏端到端检查；两个独立 Mac 经虚拟局域网完成 153 项检查，覆盖双向来访、轻放/抛出、召回、重启和缺 provider 回退。不是物理 Wi-Fi 广播、Windows、原生焦点/穿透或公开发布的证明。未新增能力或最低已发布宿主版本；个人素材不随这些公开仓库分发。
+
+Validation status (2026-09-22): a private macOS arm64 signed-ASAR candidate passed 168 hidden E2E checks; two separate Macs passed 153 checks over a virtual LAN, including both visit directions, placement/throwing, recall, restart and missing-provider fallback. This does not establish physical Wi-Fi broadcast, Windows, native focus/passthrough or a public release. No API or minimum released host version is added, and personal assets are not distributed by these public repositories.
