@@ -9,9 +9,9 @@
 > 可能在任一 apiVersion 变更且不走废弃流程；判为 C 档的能力不作为对外契约，样板不碰。
 > 分档定义见 [@pet/plugin-types](https://github.com/ShunyuYao/pet-plugin-types) 的 README。
 
-本轮更新已纳入主分支，未发布新的 npm 包；源码版本号 `1.0.0-rc.3` 不代表 npm 产物已包含本轮说明。基础模板继续只调用冻结能力，未增加权限；类型依赖仍来自 Git，实际内容取决于锁文件解析的提交。
+本分支的实时形象说明属于尚未发布的 M1b 候选，不声明最低宿主支持版本；源码版本号 `1.0.0-rc.3` 不代表 npm 产物已包含这些说明。基础模板继续只调用冻结能力，未增加权限；类型依赖仍来自 Git，实际内容取决于锁文件解析的提交。
 
-This update is on the main branch, with no new npm release. The source version `1.0.0-rc.3` is not evidence of a corresponding updated npm artifact. Templates retain their existing permissions and frozen API calls; the Git type dependency follows the commit resolved in the consumer lockfile.
+The realtime M1b documentation is an unreleased development candidate, with no claimed minimum host version. The source version `1.0.0-rc.3` is not evidence of a corresponding updated npm artifact. Templates retain their existing permissions and frozen API calls; the Git type dependency follows the commit resolved in the consumer lockfile.
 
 ## 用法
 
@@ -44,87 +44,101 @@ manifest 的 `id` 与 `name`。
 | `name` | ✅ | 展示名 |
 | `version` | ✅ | 必须是 `x.y.z` |
 | `apiVersion` | 建议 | 按哪一代 SDK 语义写的。当前 `1`；缺省按宿主最低兼容版本处理，声明了就必须是 ≥1 的整数 |
-| `kind` | ✅ | 普通插件为 `tool` / `panel` / `asset` / `skill` / `settings` / `service` / `dashboard-card` 的非空子集；实验主题只能为 `["theme"]` |
+| `kind` | ✅ | 普通插件为 `tool` / `panel` / `asset` / `skill` / `settings` / `service` / `dashboard-card` 的非空子集；实验主题只能为 `["theme"]`，实时渲染插件只能为 `["appearance-renderer"]` |
 | `permissions` | — | 权限名数组，见 `@pet/plugin-types` 的 `PluginPermission`。联网必须逐域名写 `net:api.example.com`，没有宽泛的 `net` |
 | `minHostVersion` | — | 要求的最低宿主版本 |
 | `entry` | 视 kind | `kind` 含 `tool` 要 `entry.tool`；含 `panel` 要 `entry.panel.src`；含 `dashboard-card` 要 `entry.dashboardBlock.src`；含 `service` 要 `provides.service` |
 
 ## 上下文能力矩阵
 
-`pet.*` 各命名空间在三种上下文下**有意不一致**——这是安全与生命周期决定的边界，不是待修
-的历史差异：渲染层不给密钥与裸 `fetch`（有 CSP 约束、XSS 即泄漏），窗口/区块关掉就失活
-所以不能持有 handler。下表为 `apiVersion: 1` 的确定结论，与宿主
-`demo/core/plugin-runtime/sdk-surface.js` 一一对应。
+普通插件使用 tool/panel/dashboard-card 三种上下文；专用 render 沙箱只提供 `pet.render`，不继承通用 SDK。上下文差异是权限与生命周期边界。下表与候选宿主的 `demo/core/plugin-runtime/sdk-surface.js` 对应；`apiVersion: 1` 不表示旧宿主支持后来增加的实验能力。
 
 标记：**A** = 已冻结；**B** = `@experimental`；空 = 该上下文不可用。
 
 <!-- sdk-surface:start -->
-| 命名空间 | 方法 | tool | panel | dashboard-card |
-|---|---|:--:|:--:|:--:|
-| `appearance` | `getState` | B | B | — |
-| `appearance` | `apply` | B | B | — |
-| `appearance` | `reset` | B | B | — |
-| `account` | `getState` | B | — | — |
-| `account` | `authorize` | B | — | — |
-| `storage` | `get` | A | A | A |
-| `storage` | `set` | A | A | A |
-| `storage` | `delete` | A | A | A |
-| `storage` | `all` | A | A | A |
-| `secrets` | `get` | A | — | — |
-| `secrets` | `set` | A | — | — |
-| `secrets` | `delete` | A | — | — |
-| `pet` | `bubble` | A | A | A |
-| `pet` | `playAnim` | A | A | A |
-| `pet` | `getAnimations` | B | B | B |
-| `pet` | `speak` | A | A | A |
-| `badge` | `set` | B | — | — |
-| `badge` | `clear` | B | — | — |
-| `ui` | `dialog` | A | A | A |
-| `ui` | `taskCheck` | B | B | B |
-| `ui` | `copyText` | A | A | A |
-| `ui` | `openPanel` | A | — | — |
-| `ui` | `closePanel` | A | A | — |
-| `ui` | `setPanelPinned` | B | B | — |
-| `events` | `on` | A | A | A |
-| `events` | `emit` | A | A | A |
-| `scheduler` | `every` | A | — | — |
-| `scheduler` | `daily` | A | — | — |
-| `scheduler` | `cancel` | A | — | — |
-| `net` | `fetch` | A | — | — |
-| `services` | `get` | A | A | A |
-| `settings` | `get` | A | A | A |
-| `ai` | `chat` | B | B | B |
-| `files` | `pick` | B | B | — |
-| `files` | `stat` | B | B | — |
-| `files` | `open` | B | B | — |
-| `files` | `list` | B | B | — |
-| `files` | `revoke` | B | B | — |
-| `files` | `pin` | B | B | — |
-| `files` | `unpin` | B | B | — |
-| `clipboard` | `startHistory` | B | — | — |
-| `clipboard` | `stopHistory` | B | — | — |
-| `clipboard` | `query` | B | B | — |
-| `clipboard` | `read` | B | B | — |
-| `clipboard` | `copy` | B | B | — |
-| `clipboard` | `markReferenced` | B | B | — |
-| `clipboard` | `remove` | B | B | — |
-| `clipboard` | `clearHistory` | B | B | — |
-| `errands` | `composeFile` | B | B | — |
-| `friends` | `me` | A | A | A |
-| `friends` | `list` | A | A | A |
-| `friends` | `isFriend` | A | A | A |
-| `friends` | `avatar` | A | A | A |
-| `activity` | `getLatest` | B | B | B |
-| `activity` | `connectionInfo` | B | B | B |
-| `dashboard` | `requestHeight` | A | — | A |
-| `dashboard` | `notifyReady` | A | — | A |
-| `tools` | `register` | A | — | — |
-| `calendar` | `registerProvider` | B | — | — |
-| `(root)` | `context` | — | — | A |
+| 命名空间 | 方法 | tool | panel | dashboard-card | render |
+|---|---|:--:|:--:|:--:|:--:|
+| `render` | `onControl` | — | — | — | B |
+| `render` | `submitFrame` | — | — | — | B |
+| `render` | `fail` | — | — | — | B |
+| `sessions` | `getContext` | — | — | — | — |
+| `sessions` | `join` | — | — | — | — |
+| `sessions` | `send` | — | — | — | — |
+| `sessions` | `poll` | — | — | — | — |
+| `sessions` | `transfer` | — | — | — | — |
+| `sessions` | `readTransfer` | — | — | — | — |
+| `sessions` | `leave` | — | — | — | — |
+| `character` | `getCurrent` | B | B | B | — |
+| `character` | `watch` | B | B | B | — |
+| `character` | `next` | B | B | B | — |
+| `character` | `unwatch` | B | B | B | — |
+| `capabilities` | `query` | B | B | B | — |
+| `capabilities` | `request` | — | — | — | — |
+| `services` | `invoke` | B | B | B | — |
+| `appearance` | `getState` | B | B | — | — |
+| `appearance` | `apply` | B | B | — | — |
+| `appearance` | `reset` | B | B | — | — |
+| `appearance` | `refresh` | B | — | — | — |
+| `account` | `getState` | B | — | — | — |
+| `account` | `authorize` | B | — | — | — |
+| `storage` | `get` | A | A | A | — |
+| `storage` | `set` | A | A | A | — |
+| `storage` | `delete` | A | A | A | — |
+| `storage` | `all` | A | A | A | — |
+| `secrets` | `get` | A | — | — | — |
+| `secrets` | `set` | A | — | — | — |
+| `secrets` | `delete` | A | — | — | — |
+| `pet` | `bubble` | A | A | A | — |
+| `pet` | `playAnim` | A | A | A | — |
+| `pet` | `getAnimations` | B | B | B | — |
+| `pet` | `speak` | A | A | A | — |
+| `badge` | `set` | B | — | — | — |
+| `badge` | `clear` | B | — | — | — |
+| `ui` | `dialog` | A | A | A | — |
+| `ui` | `taskCheck` | B | B | B | — |
+| `ui` | `copyText` | A | A | A | — |
+| `ui` | `openPanel` | A | — | — | — |
+| `ui` | `closePanel` | A | A | — | — |
+| `ui` | `setPanelPinned` | B | B | — | — |
+| `events` | `on` | A | A | A | — |
+| `events` | `emit` | A | A | A | — |
+| `scheduler` | `every` | A | — | — | — |
+| `scheduler` | `daily` | A | — | — | — |
+| `scheduler` | `cancel` | A | — | — | — |
+| `net` | `fetch` | A | — | — | — |
+| `services` | `get` | A | A | A | — |
+| `settings` | `get` | A | A | A | — |
+| `ai` | `chat` | B | B | B | — |
+| `files` | `pick` | B | B | — | — |
+| `files` | `stat` | B | B | — | — |
+| `files` | `open` | B | B | — | — |
+| `files` | `list` | B | B | — | — |
+| `files` | `revoke` | B | B | — | — |
+| `files` | `pin` | B | B | — | — |
+| `files` | `unpin` | B | B | — | — |
+| `clipboard` | `startHistory` | B | — | — | — |
+| `clipboard` | `stopHistory` | B | — | — | — |
+| `clipboard` | `query` | B | B | — | — |
+| `clipboard` | `read` | B | B | — | — |
+| `clipboard` | `copy` | B | B | — | — |
+| `clipboard` | `markReferenced` | B | B | — | — |
+| `clipboard` | `remove` | B | B | — | — |
+| `clipboard` | `clearHistory` | B | B | — | — |
+| `errands` | `composeFile` | B | B | — | — |
+| `friends` | `me` | A | A | A | — |
+| `friends` | `list` | A | A | A | — |
+| `friends` | `isFriend` | A | A | A | — |
+| `friends` | `avatar` | A | A | A | — |
+| `activity` | `getLatest` | B | B | B | — |
+| `activity` | `connectionInfo` | B | B | B | — |
+| `dashboard` | `requestHeight` | A | — | A | — |
+| `dashboard` | `notifyReady` | A | — | A | — |
+| `tools` | `register` | A | — | — | — |
+| `calendar` | `registerProvider` | B | — | — | — |
+| `(root)` | `context` | — | — | A | — |
 <!-- sdk-surface:end -->
 
-三种上下文的精确类型分别是 `PetTool` / `PetPanel` / `PetBlock`，编辑器里越界访问会直接
-报错。普通 SDK 调用返回 Promise；桥内注册方法返回 void，以对应类型签名为准。
+对应精确类型为 `PetTool` / `PetPanel` / `PetBlock` / `PetRender`，编辑器里越界访问会直接报错。普通 SDK 调用返回 Promise；render 的 `submitFrame`/`fail` 返回 void，`onControl` 返回取消订阅函数，以对应类型签名为准。
 内置和外部工具插件都经 utilityProcess/RPC 调用宿主。
 
 `panel` 与 `dashboard-card` 由宿主强制加 CSP：`script-src 'self' 'unsafe-inline'`，
@@ -132,8 +146,7 @@ manifest 的 `id` 与 `name`。
 
 ## 新增实验能力与最低宿主版本
 
-本矩阵与宿主 0.19.1 源码及更新后的 `@pet/plugin-types` 对齐；模板只使用基础 A 档能力，
-不会默认开启剪贴板历史或占用徽标。
+本矩阵随实际候选宿主和 `@pet/plugin-types` 做交付对账，不以一个历史版本概括所有增量能力。基础模板只使用 A 档能力，不默认开启剪贴板历史、占用徽标或申请 `appearance:render`。
 
 - `badge.set/clear` 仅 tool，需 `pet` 权限；`onClick: 'openPanel'` 还需 `ui` 和 panel 入口。
   徽标以宿主 0.19.1 为基线，旧版应先探测可用性，或声明实际最低宿主版本。
@@ -287,3 +300,23 @@ Switching preserves drafts and conversation state. Valid choices survive restart
 在包含此改动的源码检出中运行 `node index.js my-theme --kind theme`。生成 manifest.json、theme.json、package.json 与说明，不生成可执行入口。普通模板的权限不变。此用法尚未发布到正式 CLI。
 
 From a checkout containing this change, run `node index.js my-theme --kind theme`. It generates data and documentation only. Existing templates keep their permissions. This is an unreleased source feature.
+
+
+## 实时形象 / Realtime appearance（M1b 候选，未发布）
+
+本期只更新契约说明与交付检查，不增加 renderer 生成模板；tool/panel/dashboard-card 基础模板不会申请 `appearance:render`。公共渲染代码和个人 asset 数据必须分包。
+
+- 渲染包仅 `kind:["appearance-renderer"]`、`permissions:["appearance:render"]`，入口为 `entry.renderer:{src:"renderer.html",apiVersion:1,dataVersions:[1]}`；不可混合 tool/panel/service 入口或通用权限。dataVersions 接受 1–64 项不重复的正安全整数，版本由 renderer 定义，示例 [1] 不是宿主限制。
+- 个人形象继续保留普通动作，在 character.json 增加 `realtime:{renderer:"sample-renderer",dataVersion:1,data:"realtime/data.json",assets:{head:"realtime/head.png"}}`。data/assets 相对于 character.json，不能指向外部 URL 或宿主路径。
+- data 最多 64 KiB；资源最多 32 项，单项 16 MiB、总计 64 MiB；仅 png/jpg/jpeg/webp/json/glb/bin，单张图片每边最多 8192 像素、总像素最多 16 × 1024²，全部作为数据读取。照片留在个人资源包，渲染包只提供公共代码与模型。
+- `PetRender` 只有 `pet.render.onControl`、`submitFrame`、`fail`，不继承普通 SDK。onControl 返回取消订阅函数；submitFrame/fail 返回 void。控制消息含 init/begin/move/end/cancel/ack；帧仅 `{seq,width,height,pixels,x,y,phase:'active'|'idle'}`，会话由宿主绑定，不能传目标 ID。
+- 首个有效 idle 帧表示准备完成；RGBA 帧最多 1024²，始终一帧在途，实际绘制后才 ack。结束抓取不等于结束渲染；切换、同 key 刷新、失活或错误均回收旧会话。
+- `appearance.getState().own.realtime` 是可选 `{renderer,dataVersion,state}`，state 为 ready/missing-renderer/unsupported/unavailable。缺字段或无兼容 renderer 时保留普通动作。不能凭 apiVersion 1 宣称旧宿主支持。
+
+`submitFrame` 同步抛出 `render_not_initialized` / `invalid_frame` / `stale_frame` / `frame_in_flight`。拒绝不消耗 seq，init 重置计数；匹配 ack 先释放在途帧位再调用 onControl，监听器内可发送下一帧。像素只复制有效视图，避免传输无关的大 backing buffer。These are synchronous errors, not Promise rejections.
+
+The dedicated render sandbox only exposes the three render methods; tool, panel and block do not gain frame control. The installed renderer receives immutable data and session-scoped asset URLs, never a personal plugin directory or host credentials. The render-bridge apiVersion and renderer dataVersion are separate. The complete message and type contract lives in [pet-plugin-types](https://github.com/ShunyuYao/pet-plugin-types).
+
+本候选尚未发布 npm 或宿主版本，不填写未经构建验证的 minHostVersion。M1b 实时仅本机，现有串门保持普通动作；访客类型是后续 M2 的预留，不能当成已实现。接收端将只运行本地已安装且授权的 renderer，不自动执行对端插件代码。No renderer template, package publication, marketplace entry, minimum released host version, or cross-machine realtime support is introduced by this documentation update.
+
+交付时使用实际候选宿主与类型包路径运行 `test:delivery`；它经类型包检查器核对四列能力矩阵和 renderer 隔离契约，同时验证四种现有模板。没有相应依赖时不能将跳过记为通过。
