@@ -9,9 +9,9 @@
 > 可能在任一 apiVersion 变更且不走废弃流程；判为 C 档的能力不作为对外契约，样板不碰。
 > 分档定义见 [@pet/plugin-types](https://github.com/ShunyuYao/pet-plugin-types) 的 README。
 
-本分支的实时形象说明属于尚未发布的 M1b 候选，不声明最低宿主支持版本；源码版本号 `1.0.0-rc.3` 不代表 npm 产物已包含这些说明。基础模板继续只调用冻结能力，未增加权限；类型依赖仍来自 Git，实际内容取决于锁文件解析的提交。
+本分支的实时形象与访客说明属于尚未发布的 M1b / M2 候选，不声明最低宿主支持版本；源码版本号 `1.0.0-rc.3` 不代表 npm 产物已包含这些说明。基础模板继续只调用冻结能力，未增加权限；类型依赖仍来自 Git，实际内容取决于锁文件解析的提交。
 
-The realtime M1b documentation is an unreleased development candidate, with no claimed minimum host version. The source version `1.0.0-rc.3` is not evidence of a corresponding updated npm artifact. Templates retain their existing permissions and frozen API calls; the Git type dependency follows the commit resolved in the consumer lockfile.
+The realtime M1b and visitor M2 documentation describes unreleased development candidates, with no claimed minimum host version. The source version `1.0.0-rc.3` is not evidence of a corresponding updated npm artifact. Templates retain their existing permissions and frozen API calls; the Git type dependency follows the commit resolved in the consumer lockfile.
 
 ## 用法
 
@@ -302,7 +302,7 @@ Switching preserves drafts and conversation state. Valid choices survive restart
 From a checkout containing this change, run `node index.js my-theme --kind theme`. It generates data and documentation only. Existing templates keep their permissions. This is an unreleased source feature.
 
 
-## 实时形象 / Realtime appearance（M1b 候选，未发布）
+## 实时形象 / Realtime appearance（M1b / M2 候选，未发布）
 
 本期只更新契约说明与交付检查，不增加 renderer 生成模板；tool/panel/dashboard-card 基础模板不会申请 `appearance:render`。公共渲染代码和个人 asset 数据必须分包。
 
@@ -310,13 +310,19 @@ From a checkout containing this change, run `node index.js my-theme --kind theme
 - 个人形象继续保留普通动作，在 character.json 增加 `realtime:{renderer:"sample-renderer",dataVersion:1,data:"realtime/data.json",assets:{head:"realtime/head.png"}}`。data/assets 相对于 character.json，不能指向外部 URL 或宿主路径。
 - data 最多 64 KiB；资源最多 32 项，单项 16 MiB、总计 64 MiB；仅 png/jpg/jpeg/webp/json/glb/bin，单张图片每边最多 8192 像素、总像素最多 16 × 1024²，全部作为数据读取。照片留在个人资源包，渲染包只提供公共代码与模型。
 - `PetRender` 只有 `pet.render.onControl`、`submitFrame`、`fail`，不继承普通 SDK。onControl 返回取消订阅函数；submitFrame/fail 返回 void。控制消息含 init/begin/move/end/cancel/ack；帧仅 `{seq,width,height,pixels,x,y,phase:'active'|'idle'}`，会话由宿主绑定，不能传目标 ID。
-- 首个有效 idle 帧表示准备完成；RGBA 帧最多 1024²，始终一帧在途，实际绘制后才 ack。结束抓取不等于结束渲染；切换、同 key 刷新、失活或错误均回收旧会话。
+- 首个有效 idle 帧在宿主离屏准备画布绘制后 ACK，表示准备完成，不覆盖当前普通姿态；活动阶段 ACK 在可见画布提交后发出。RGBA 帧最多 1024²，始终一帧在途。结束抓取不等于结束渲染；切换、同 key 刷新、失活或错误均回收旧会话。
 - `appearance.getState().own.realtime` 是可选 `{renderer,dataVersion,state}`，state 为 ready/missing-renderer/unsupported/unavailable。缺字段或无兼容 renderer 时保留普通动作。不能凭 apiVersion 1 宣称旧宿主支持。
 
 `submitFrame` 同步抛出 `render_not_initialized` / `invalid_frame` / `stale_frame` / `frame_in_flight`。拒绝不消耗 seq，init 重置计数；匹配 ack 先释放在途帧位再调用 onControl，监听器内可发送下一帧。像素只复制有效视图，避免传输无关的大 backing buffer。These are synchronous errors, not Promise rejections.
 
-The dedicated render sandbox only exposes the three render methods; tool, panel and block do not gain frame control. The installed renderer receives immutable data and session-scoped asset URLs, never a personal plugin directory or host credentials. The render-bridge apiVersion and renderer dataVersion are separate. The complete message and type contract lives in [pet-plugin-types](https://github.com/ShunyuYao/pet-plugin-types).
+The dedicated render sandbox only exposes the three render methods; tool, panel and block do not gain frame control. The installed renderer receives immutable data and session-scoped asset URLs, never a personal plugin directory or host credentials. Preparation acknowledges drawing to the host preparation canvas without replacing the ordinary pose; active rendering is acknowledged after visible-canvas submission. The render-bridge apiVersion and renderer dataVersion are separate. The complete message and type contract lives in [pet-plugin-types](https://github.com/ShunyuYao/pet-plugin-types).
 
-本候选尚未发布 npm 或宿主版本，不填写未经构建验证的 minHostVersion。M1b 实时仅本机，现有串门保持普通动作；访客类型是后续 M2 的预留，不能当成已实现。接收端将只运行本地已安装且授权的 renderer，不自动执行对端插件代码。No renderer template, package publication, marketplace entry, minimum released host version, or cross-machine realtime support is introduced by this documentation update.
+M1b 只创建 host；尚未发布的 M2 候选支持 `init.instance.kind:'visitor'`，沿用三个 render 方法，不新增方法、权限或模板。M2 通过现有认证来访通道传递出发时固定的数据和资源，普通动作 v1–v3 描述保持不变。接收端仅运行本机已安装、已授权且数据版本兼容的 provider，不接收、安装或执行远端插件代码，也不跨机传送连续 RGBA 帧。每位访客独立会话，召回/离开优先终止抓取或自由落体并清理。
+
+缺少、未授权或不兼容 provider 时，串门继续普通动作并提示暂不支持布偶拖拽；损坏资源或准备失败须明确失败。可用实时访客在普通帧解码且首个有效 idle 帧在宿主离屏准备画布绘制后 ACK 后才允许出发。以上是候选兼容契约，不是跨机或 E2E 验收结论。本候选尚未发布 npm 或宿主版本，不填写未经构建验证的 minHostVersion，不登记市场条目，也不提供测试宿主下载入口。
+
+M1b creates host instances only; the unreleased M2 candidate also binds visitors through the same three render methods. An authenticated visit channel carries immutable departure data and resources, without changing ordinary v1–v3 descriptors. Only a locally installed, authorized and data-compatible provider executes on the receiver. Peer plugin code and continuous RGBA frames are not transferred. Recall/departure cancels local grabbing or falling and cleans up the visitor session.
+
+A missing, unauthorized or incompatible provider uses ordinary actions with a notice; corrupt resources or failed preparation must fail explicitly. Supported realtime visits wait for ordinary-frame decoding and acknowledgement after drawing the first valid idle frame to the host preparation canvas before departure. This documents candidate requirements, not completed cross-machine or E2E validation. No new template, package publication, marketplace entry, minimum released host version or public host download is introduced.
 
 交付时使用实际候选宿主与类型包路径运行 `test:delivery`；它经类型包检查器核对四列能力矩阵和 renderer 隔离契约，同时验证四种现有模板。没有相应依赖时不能将跳过记为通过。
