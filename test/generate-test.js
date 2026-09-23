@@ -72,6 +72,7 @@ try {
       const original = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'templates', kind, 'manifest.json'), 'utf8'));
       check(JSON.stringify(m.permissions) === JSON.stringify(original.permissions), `${kind}: 普通模板权限保持不变`);
       check(!m.permissions.includes('ui:theme'), `${kind}: 不自动申请主题权限`);
+      check(!m.permissions.includes('appearance:render'), `${kind}: 不自动申请实时渲染权限`);
     }
 
     if (loadManifest) {
