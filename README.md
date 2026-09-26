@@ -69,6 +69,7 @@ manifest 的 `id` 与 `name`。
 | `sessions` | `readTransfer` | — | — | — | — |
 | `sessions` | `leave` | — | — | — | — |
 | `character` | `getCurrent` | B | B | B | — |
+| `character` | `getRealtime` | B | B | B | — |
 | `character` | `watch` | B | B | B | — |
 | `character` | `next` | B | B | B | — |
 | `character` | `unwatch` | B | B | B | — |
@@ -153,6 +154,7 @@ manifest 的 `id` 与 `name`。
 - `ui.setPanelPinned` 仅 tool/panel；`clipboard` 需同名权限，轮询启停仅 tool。
 - `errands.composeFile` 需 `errands` 权限；剪贴板图片来源另需 `clipboard`，收件人由用户选择。
 - `files.revoke` 是撤销授权，不删除磁盘文件；已没有 `files.remove` 方法。
+- `character.getRealtime` 只读返回当前形象的实时外观数据（无实时描述时为 `null`），复用 `character:read`，不授予 `appearance:render`；尚未发布，须先探测。基础模板不调用它。
 - `friends` 以账号 UID 为主键，存量/游客情形用 `uid || petId`。
 - manifest 可声明 `activation: 'opt-in'` 和 `entry.panel.transparent`；前者是插件启用策略，
   不是更新开关。本轮未新增任何自动更新接口或参与字段。
