@@ -233,7 +233,7 @@ true 只允许自动检查和提醒，**每次下载、安装仍需用户在宿�
 
 ## Account delegation / 插件账号授权（实验，未发布）
 
-`pet.account.getState({serviceId})` 与 `pet.account.authorize({serviceId,challengeId,codeChallenge})` 仅 tool 可用，需 `account:authorize:<serviceId>` 权限，且该服务已在宿主与账号服务登记。新方法未包含在已发布宿主中；请探测能力并明确提示暂不可用，不能仅凭 apiVersion 1 推断支持，也不要虚填 minHostVersion。基础模板不自动申请这项权限。
+`pet.account.getState({serviceId})` 与 `pet.account.authorize({serviceId,challengeId,codeChallenge})` tool 可用（HTML 扩展见下文），需 `account:authorize:<serviceId>` 权限，且该服务已在宿主与账号服务登记。新方法未包含在已发布宿主中；请探测能力并明确提示暂不可用，不能仅凭 apiVersion 1 推断支持，也不要虚填 minHostVersion。基础模板不自动申请这项权限。
 
 `getState` 返回本机 `signedIn / uid / revision`，UID 不是认证凭据。`authorize` 返回 60 秒内有效的一次性 `code / expiresIn / revision`；每次生成新的随机 PKCE verifier，并传 S256 挑战。仅目标服务后端可兑换授权码，插件不得读取或获取宿主 access / refresh token。
 
@@ -341,3 +341,21 @@ Validation status (2026-09-22): a private macOS arm64 signed-ASAR candidate pass
 `pet-ragdoll-renderer` 使用现有实验 `PetRender` 三方法和声明式资源接口；它定义的 `dataVersion: 2` 将衣服贴图、轮廓及头像都放在角色包，公共 provider 不含形象素材。这是 provider 私有数据版本的变化，不是宿主桥 API 升级。兼容基线为受邀 macOS arm64 候选 `0.26.0-ragdoll.1`，旧 `0.26.0` 不支持。宿主仍仅受邀分发，不因插件公开而公开宿主。
 
 The independent provider uses the existing experimental three-method render bridge. Provider-owned appearance data v2 moves clothing textures, contours and portraits into the owning appearance package; it does not add a host SDK method or a scaffold permission. Compatibility is limited to the invited realtime-capable macOS arm64 candidate `0.26.0-ragdoll.1`; older `0.26.0` is unsupported. Publishing a provider does not publish host installers or an npm SDK version.
+
+
+## HTML account authorization / HTML 账号授权（未发布候选）
+
+The account capability is now available in the enhanced HTML `work` context as well as plugin `tool`; panel/block remain unsupported. This is a context extension of the existing experimental methods, not a new authentication protocol. No published host/package compatibility is claimed.
+
+增强 HTML 可声明 `account:authorize:cat-leaderboard`（或另一个已登记服务），再由用户通过可信宿主授权界面批准。调用 `pet.account.getState({serviceId})` 读取 `{signedIn,uid,revision}`；`pet.account.authorize({serviceId,challengeId,codeChallenge})` 返回一次性 `{code,expiresIn,revision}`。`PetAccount` 是两种上下文共用的账号能力类型。权限声明不等于授权；授权仅对应指定服务，不能继承别的作品、插件或账号权限。
+
+UID identifies an account; it is not proof of ownership. The registered service backend exchanges the short-lived code with PKCE and revalidates the parent session. Host access/refresh tokens never enter an HTML work or service backend. Closing/revoking a work or switching accounts cancels pending authorization.
+
+HTML 只在用户主动启用相关功能时调用 `capabilities.request({})`。新增网络许可会重载页面，须在游戏开局或编辑草稿之前完成；拒绝或能力不支持时保留本地功能，不能伪造登录或降级创建匿名参榜身份。账号查询本身不会弹出授权，也不会提供登录凭据。
+
+| Method | tool | panel | block | work | Permission |
+|---|---|---|---|---|---|
+| account.getState | experimental | — | — | experimental | account:authorize:<serviceId> |
+| account.authorize | experimental | — | — | experimental | account:authorize:<serviceId> |
+
+No new method is added: method counts and apiVersion remain unchanged. Base scaffold permissions are unchanged. Host and account service support must be detected at runtime; this documentation does not establish a minimum released host version.
