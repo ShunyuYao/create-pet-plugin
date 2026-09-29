@@ -56,90 +56,100 @@ manifest 的 `id` 与 `name`。
 标记：**A** = 已冻结；**B** = `@experimental`；空 = 该上下文不可用。
 
 <!-- sdk-surface:start -->
-| 命名空间 | 方法 | tool | panel | dashboard-card | render |
-|---|---|:--:|:--:|:--:|:--:|
-| `render` | `onControl` | — | — | — | B |
-| `render` | `submitFrame` | — | — | — | B |
-| `render` | `fail` | — | — | — | B |
-| `sessions` | `getContext` | — | — | — | — |
-| `sessions` | `join` | — | — | — | — |
-| `sessions` | `send` | — | — | — | — |
-| `sessions` | `poll` | — | — | — | — |
-| `sessions` | `transfer` | — | — | — | — |
-| `sessions` | `readTransfer` | — | — | — | — |
-| `sessions` | `leave` | — | — | — | — |
-| `character` | `getCurrent` | B | B | B | — |
-| `character` | `getRealtime` | B | B | B | — |
-| `character` | `watch` | B | B | B | — |
-| `character` | `next` | B | B | B | — |
-| `character` | `unwatch` | B | B | B | — |
-| `capabilities` | `query` | B | B | B | — |
-| `capabilities` | `request` | — | — | — | — |
-| `services` | `invoke` | B | B | B | — |
-| `appearance` | `getState` | B | B | — | — |
-| `appearance` | `apply` | B | B | — | — |
-| `appearance` | `reset` | B | B | — | — |
-| `appearance` | `refresh` | B | — | — | — |
-| `account` | `getState` | B | — | — | — |
-| `account` | `authorize` | B | — | — | — |
-| `storage` | `get` | A | A | A | — |
-| `storage` | `set` | A | A | A | — |
-| `storage` | `delete` | A | A | A | — |
-| `storage` | `all` | A | A | A | — |
-| `secrets` | `get` | A | — | — | — |
-| `secrets` | `set` | A | — | — | — |
-| `secrets` | `delete` | A | — | — | — |
-| `pet` | `bubble` | A | A | A | — |
-| `pet` | `playAnim` | A | A | A | — |
-| `pet` | `getAnimations` | B | B | B | — |
-| `pet` | `speak` | A | A | A | — |
-| `badge` | `set` | B | — | — | — |
-| `badge` | `clear` | B | — | — | — |
-| `ui` | `dialog` | A | A | A | — |
-| `ui` | `taskCheck` | B | B | B | — |
-| `ui` | `copyText` | A | A | A | — |
-| `ui` | `openPanel` | A | — | — | — |
-| `ui` | `closePanel` | A | A | — | — |
-| `ui` | `setPanelPinned` | B | B | — | — |
-| `events` | `on` | A | A | A | — |
-| `events` | `emit` | A | A | A | — |
-| `scheduler` | `every` | A | — | — | — |
-| `scheduler` | `daily` | A | — | — | — |
-| `scheduler` | `cancel` | A | — | — | — |
-| `net` | `fetch` | A | — | — | — |
-| `services` | `get` | A | A | A | — |
-| `settings` | `get` | A | A | A | — |
-| `ai` | `chat` | B | B | B | — |
-| `files` | `pick` | B | B | — | — |
-| `files` | `stat` | B | B | — | — |
-| `files` | `open` | B | B | — | — |
-| `files` | `list` | B | B | — | — |
-| `files` | `revoke` | B | B | — | — |
-| `files` | `pin` | B | B | — | — |
-| `files` | `unpin` | B | B | — | — |
-| `clipboard` | `startHistory` | B | — | — | — |
-| `clipboard` | `stopHistory` | B | — | — | — |
-| `clipboard` | `query` | B | B | — | — |
-| `clipboard` | `read` | B | B | — | — |
-| `clipboard` | `copy` | B | B | — | — |
-| `clipboard` | `markReferenced` | B | B | — | — |
-| `clipboard` | `remove` | B | B | — | — |
-| `clipboard` | `clearHistory` | B | B | — | — |
-| `errands` | `composeFile` | B | B | — | — |
-| `friends` | `me` | A | A | A | — |
-| `friends` | `list` | A | A | A | — |
-| `friends` | `isFriend` | A | A | A | — |
-| `friends` | `avatar` | A | A | A | — |
-| `activity` | `getLatest` | B | B | B | — |
-| `activity` | `connectionInfo` | B | B | B | — |
-| `dashboard` | `requestHeight` | A | — | A | — |
-| `dashboard` | `notifyReady` | A | — | A | — |
-| `tools` | `register` | A | — | — | — |
-| `calendar` | `registerProvider` | B | — | — | — |
-| `(root)` | `context` | — | — | A | — |
+| Namespace | Method | tool | panel | block | render | work |
+|---|---|---|---|---|---|---|
+| `input` | `registerProvider` | B | — | — | — | — |
+| `input` | `getConfig` | B | B | — | — | — |
+| `input` | `updateConfig` | B | B | — | — | — |
+| `input` | `unregisterProvider` | B | — | — | — | — |
+| `input` | `connect` | — | — | — | — | B |
+| `input` | `read` | — | — | — | — | B |
+| `input` | `setContext` | — | — | — | — | B |
+| `input` | `onStatus` | — | — | — | — | B |
+| `input` | `openSettings` | — | — | — | — | B |
+| `input` | `disconnect` | — | — | — | — | B |
+| `render` | `onControl` | — | — | — | B | — |
+| `render` | `submitFrame` | — | — | — | B | — |
+| `render` | `fail` | — | — | — | B | — |
+| `sessions` | `getContext` | — | — | — | — | B |
+| `sessions` | `join` | — | — | — | — | B |
+| `sessions` | `send` | — | — | — | — | B |
+| `sessions` | `poll` | — | — | — | — | B |
+| `sessions` | `transfer` | — | — | — | — | B |
+| `sessions` | `readTransfer` | — | — | — | — | B |
+| `sessions` | `leave` | — | — | — | — | B |
+| `character` | `getCurrent` | B | B | B | — | B |
+| `character` | `getRealtime` | B | B | B | — | B |
+| `character` | `watch` | B | B | B | — | B |
+| `character` | `next` | B | B | B | — | B |
+| `character` | `unwatch` | B | B | B | — | B |
+| `capabilities` | `query` | B | B | B | — | B |
+| `capabilities` | `request` | — | — | — | — | B |
+| `services` | `invoke` | B | B | B | — | B |
+| `appearance` | `getState` | B | B | — | — | — |
+| `appearance` | `apply` | B | B | — | — | — |
+| `appearance` | `reset` | B | B | — | — | — |
+| `appearance` | `refresh` | B | — | — | — | — |
+| `account` | `getState` | B | — | — | — | — |
+| `account` | `authorize` | B | — | — | — | — |
+| `storage` | `get` | A | A | A | — | B |
+| `storage` | `set` | A | A | A | — | B |
+| `storage` | `delete` | A | A | A | — | B |
+| `storage` | `all` | A | A | A | — | B |
+| `secrets` | `get` | A | — | — | — | — |
+| `secrets` | `set` | A | — | — | — | — |
+| `secrets` | `delete` | A | — | — | — | — |
+| `pet` | `bubble` | A | A | A | — | — |
+| `pet` | `playAnim` | A | A | A | — | — |
+| `pet` | `getAnimations` | B | B | B | — | — |
+| `pet` | `speak` | A | A | A | — | — |
+| `badge` | `set` | B | — | — | — | — |
+| `badge` | `clear` | B | — | — | — | — |
+| `ui` | `dialog` | A | A | A | — | — |
+| `ui` | `taskCheck` | B | B | B | — | — |
+| `ui` | `copyText` | A | A | A | — | — |
+| `ui` | `openPanel` | A | — | — | — | — |
+| `ui` | `closePanel` | A | A | — | — | — |
+| `ui` | `setPanelPinned` | B | B | — | — | — |
+| `events` | `on` | A | A | A | — | — |
+| `events` | `emit` | A | A | A | — | — |
+| `scheduler` | `every` | A | — | — | — | — |
+| `scheduler` | `daily` | A | — | — | — | — |
+| `scheduler` | `cancel` | A | — | — | — | — |
+| `net` | `fetch` | A | — | — | — | — |
+| `services` | `get` | A | A | A | — | — |
+| `settings` | `get` | A | A | A | — | — |
+| `ai` | `chat` | B | B | B | — | — |
+| `files` | `pick` | B | B | — | — | — |
+| `files` | `stat` | B | B | — | — | — |
+| `files` | `open` | B | B | — | — | — |
+| `files` | `list` | B | B | — | — | — |
+| `files` | `revoke` | B | B | — | — | — |
+| `files` | `pin` | B | B | — | — | — |
+| `files` | `unpin` | B | B | — | — | — |
+| `clipboard` | `startHistory` | B | — | — | — | — |
+| `clipboard` | `stopHistory` | B | — | — | — | — |
+| `clipboard` | `query` | B | B | — | — | — |
+| `clipboard` | `read` | B | B | — | — | — |
+| `clipboard` | `copy` | B | B | — | — | — |
+| `clipboard` | `markReferenced` | B | B | — | — | — |
+| `clipboard` | `remove` | B | B | — | — | — |
+| `clipboard` | `clearHistory` | B | B | — | — | — |
+| `errands` | `composeFile` | B | B | — | — | — |
+| `friends` | `me` | A | A | A | — | — |
+| `friends` | `list` | A | A | A | — | — |
+| `friends` | `isFriend` | A | A | A | — | — |
+| `friends` | `avatar` | A | A | A | — | — |
+| `activity` | `getLatest` | B | B | B | — | — |
+| `activity` | `connectionInfo` | B | B | B | — | — |
+| `dashboard` | `requestHeight` | A | — | A | — | — |
+| `dashboard` | `notifyReady` | A | — | A | — | — |
+| `tools` | `register` | A | — | — | — | — |
+| `calendar` | `registerProvider` | B | — | — | — | — |
+| `(root)` | `context` | — | — | A | — | — |
 <!-- sdk-surface:end -->
 
-对应精确类型为 `PetTool` / `PetPanel` / `PetBlock` / `PetRender`，编辑器里越界访问会直接报错。普通 SDK 调用返回 Promise；render 的 `submitFrame`/`fail` 返回 void，`onControl` 返回取消订阅函数，以对应类型签名为准。
+对应精确类型为 `PetTool` / `PetPanel` / `PetBlock` / `PetRender` / `PetWork`，编辑器里越界访问会直接报错。work 不继承普通插件权限；work.storage 为 B 档，普通插件 storage 仍为 A 档。普通 SDK 调用返回 Promise；render 的 `submitFrame`/`fail` 和 work.input.setContext 返回 void，input.read 返回本地同步快照，订阅返回取消函数，以对应类型签名为准。
 内置和外部工具插件都经 utilityProcess/RPC 调用宿主。
 
 `panel` 与 `dashboard-card` 由宿主强制加 CSP：`script-src 'self' 'unsafe-inline'`，
@@ -341,3 +351,37 @@ Validation status (2026-09-22): a private macOS arm64 signed-ASAR candidate pass
 `pet-ragdoll-renderer` 使用现有实验 `PetRender` 三方法和声明式资源接口；它定义的 `dataVersion: 2` 将衣服贴图、轮廓及头像都放在角色包，公共 provider 不含形象素材。这是 provider 私有数据版本的变化，不是宿主桥 API 升级。兼容基线为受邀 macOS arm64 候选 `0.26.0-ragdoll.1`，旧 `0.26.0` 不支持。宿主仍仅受邀分发，不因插件公开而公开宿主。
 
 The independent provider uses the existing experimental three-method render bridge. Provider-owned appearance data v2 moves clothing textures, contours and portraits into the owning appearance package; it does not add a host SDK method or a scaffold permission. Compatibility is limited to the invited realtime-capable macOS arm64 candidate `0.26.0-ragdoll.1`; older `0.26.0` is unsupported. Publishing a provider does not publish host installers or an npm SDK version.
+
+
+## 通用手柄输入 / Action input（experimental，未发布）
+
+2026-09-29 候选新增 `input` 10 个 B 档方法。`input.d.ts` 声明输入数据和方法，`work.d.ts` 补齐 HTML 作品独立根；普通 plugin 根没有 work 的输入捕获或联机会话权限。`apiVersion: 1`、源码包版本和手柄协议 1 均不证明旧宿主支持；本轮没有 npm 发布、最低已发布宿主版本或硬件兼容承诺。
+
+The September 29 candidate adds ten experimental input methods and a separate HTML-work type root. This is unreleased source, not a published npm package or a minimum supported host release. Input protocol 1, package version and host apiVersion are independent; none proves hardware compatibility.
+
+| Context | Input methods | Permission |
+| --- | --- | --- |
+| tool | registerProvider, getConfig, updateConfig, unregisterProvider | input:provide |
+| panel | getConfig, updateConfig | input:provide; panel entry also needs ui |
+| work | connect, read, setContext, onStatus, openSettings, disconnect | service:gamepad-input |
+| block / render | None | No input authority |
+
+提供方必须包含 tool 入口，身份由宿主绑定；panel 只改自己提供方的配置，关面板不会停输入。第一次已授权登记选择提供方，后来的插件不能抢占。默认值不覆盖旧偏好；updateConfig 用 expectedRevision 原子比较写入，写失败不广播，逐游戏 target 只接受宿主登记的 gameKey。全局绑定限通用 ui.*，自定义动作在逐游戏层配置；实际合并后的映射也校验类型和冲突。
+
+A provider must have a tool entry. Identity and selection belong to the host, and panels configure only their own provider. Registration preserves preferences. Configuration changes use atomic revision/CAS updates; failure keeps the old active configuration. Game targets are host-issued identities; global bindings use only common ui.* actions, while custom actions are configured per game. Closing a panel does not stop its provider.
+
+高频采样与 read 留在游戏的隔离 preload 中，不逐帧调用提供方/主进程。游戏声明动作并保留键鼠路径；失焦、断连、撤权或提供方失败会中和，resetRevision 变化时须取消旧持续动作并推进 press/release 消费基线。强制中和不伪造物理 releaseCount，避免蓄力误发招。重新启用先等待回中；gameplay 中的新配置到菜单/暂停才整体生效，onStatus 报 pendingRevision。提示取 presentation 的有限文本/glyph，不能假定按钮数组下标或具体品牌。
+
+Sampling and synchronous read remain inside the work preload. Games retain keyboard/mouse paths and consume monotonic edges once. Focus loss, disconnection, revocation and provider failure cancel held actions without synthesizing a physical release. On resetRevision changes, cancel gameplay and advance consumption baselines. Restoration requires neutral controls; configuration changes wait for a menu/pause boundary and report pendingRevision. Use presentation labels/glyphs for prompts.
+
+HTML 沿用 v1/v2 的 service:gamepad-input 权限，并探测 pet.input 后回退键鼠。该服务名是宿主保留名；不得通过 services.provide/get/invoke 冒用，通用 provide 仍为 C 档未公开。work 没有通用 events/get 服务代理。work.sessions 类型反映已有 2–4 人实际契约，不能由此推断旧宿主支持 3–4 人声明。
+
+HTML keeps the existing named-service permission and feature-detects pet.input. gamepad-input is reserved and cannot be impersonated or accessed through generic service discovery/invocation. Generic services.provide remains closed. Work receives no generic plugin events or service proxies; its session types reflect the current 2–4 player contract, not compatibility with older hosts.
+
+首轮真机目标是 macOS + PS5 DualSense；Xbox、PS4/PS5 是计划支持范围，USB/蓝牙、原生焦点和具体型号仍需单独记录证据。纯 Node/类型/示例编译不证明设备兼容。当前数据格式只接受浏览器 standard mapping；auto 无可靠型号信息时显示通用标签，手动 Xbox/PlayStation 标签也不改变物理映射。没有震动、陀螺仪、自适应扳机或同机多人契约。
+
+The first hardware target is macOS with PS5 DualSense. Planned Xbox/PS4/PS5 coverage still requires model, OS and USB/Bluetooth evidence. Unit/type/example compilation is not hardware validation. This candidate accepts standard Gamepad mappings only; label preferences do not change physical mappings. Haptics, gyro, adaptive triggers and local multiplayer are outside this contract.
+
+独立样例：[输入提供方](examples/input-provider/README.md)、[HTML 游戏](examples/input-work/README.md)。基础 CLI 模板不自动申请手柄权限；这两个候选示例按需使用，不新增默认 kind。`test:delivery` 在原有生成/宿主对账后运行 `test:input-examples`，使用显式提供的宿主与类型目录编译实际 JS 和单文件 HTML 脚本，无缺依赖 SKIP。
+
+The separate provider and HTML-work examples are opt-in; ordinary CLI templates keep their original permissions and kinds. Delivery compiles the shipped example sources against the explicitly supplied types and validates declarations against the actual host. Missing host/types paths fail instead of skipping.

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Input work example</title>
+<script id="pet-sdk" type="application/json">{"version":1,"permissions":["service:gamepad-input"],"network":[]}</script>
+<body>
+  <h1>Action input example</h1>
+  <p>Space or the controller's south button increments the counter. Keyboard remains available.</p>
+  <button id="connect" type="button">Enable controller</button>
+  <button id="settings" type="button">Controller settings</button>
+  <label>Context <select id="context"><option value="gameplay">Gameplay</option><option value="menu">Menu</option><option value="text-entry">Text entry</option><option value="suspended">Suspended</option></select></label>
+  <p id="status" role="status">Keyboard ready; controller not connected.</p>
+  <p id="count">0</p>
+  <script>
+  // @ts-check
+  /** @type {import('@pet/plugin-types').PetWork | undefined} */
+  const workSdk = Reflect.get(window, 'pet');
+  let inputSession = '', connecting = false, jumps = 0, lastPress = 0, lastReset = -1;
+  /** @type {import('@pet/plugin-types').InputContext} */
+  let keyboardContext = 'gameplay';
+  /** @type {(() => void) | undefined} */
+  let stopStatus;
+  const workStatus = document.getElementById('status');
+  /** @param {unknown} message */
+  function report(message) { if (workStatus) workStatus.textContent = String(message); }
+  function jump() { jumps++; const node = document.getElementById('count'); if (node) node.textContent = String(jumps); }
+  document.addEventListener('keydown', event => { if (event.code === 'Space' && !event.repeat && keyboardContext === 'gameplay' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLSelectElement) && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); jump(); } });
+  document.getElementById('connect')?.addEventListener('click', async () => {
+    if (!workSdk?.input?.connect) { report('Controller SDK unavailable; use Space.'); return; }
+    if (inputSession || connecting) return;
+    connecting = true;
+    try {
+      await workSdk.capabilities.request();
+      const connection = await workSdk.input.connect({ protocolVersion: 1, actionSchemaVersion: 1, title: 'Action input example', actions: { jump: { type: 'button', label: 'Jump' } }, bindings: { gameplay: { jump: [{ control: 'face.south' }] } } });
+      inputSession = connection.sessionId;
+      workSdk.input.setContext(inputSession, keyboardContext);
+      stopStatus = workSdk.input.onStatus(inputSession, update => report(update.status.reason));
+    } catch (error) { report('Controller unavailable: ' + String(error)); }
+    finally { connecting = false; }
+  });
+  document.getElementById('settings')?.addEventListener('click', async () => {
+    if (!inputSession || !workSdk?.input) return;
+    try { await workSdk.input.openSettings(inputSession); } catch (error) { report(error); }
+  });
+  document.getElementById('context')?.addEventListener('change', event => {
+    const select = /** @type {HTMLSelectElement} */ (event.target);
+    const context = /** @type {import('@pet/plugin-types').InputContext} */ (select.value);
+    keyboardContext = context;
+    if (inputSession && workSdk?.input) workSdk.input.setContext(inputSession, context);
+  });
+  function frame() {
+    if (inputSession && workSdk?.input) {
+      try {
+        const snapshot = workSdk.input.read(inputSession), action = snapshot.actions.jump;
+        if (action.type === 'button') {
+          if (lastReset !== snapshot.resetRevision) {
+            // Reset cancels old gameplay; never replay pre-blur button edges.
+            lastReset = snapshot.resetRevision; lastPress = action.pressCount;
+          } else {
+            const presses = action.pressCount - lastPress; lastPress = action.pressCount;
+            if (snapshot.status.capture === 'active') for (let i = 0; i < presses; i++) jump();
+          }
+        }
+      } catch (error) { stopStatus?.(); inputSession = ''; report('Use keyboard: ' + String(error)); }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window.addEventListener('pagehide', () => { stopStatus?.(); if (inputSession) void workSdk?.input.disconnect(inputSession).catch(() => {}); }, { once: true });
+  </script>
+</body></html>
