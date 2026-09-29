@@ -8,7 +8,8 @@
   "files": [
     "index.js",
     "templates",
-    "README.md"
+    "README.md",
+    "examples"
   ],
   "license": "MIT",
   "repository": {
@@ -21,7 +22,9 @@
   "scripts": {
     "test": "npm run test:generate",
     "test:generate": "node test/generate-test.js",
-    "test:delivery": "node test/generate-test.js --require-host"
+    "test:delivery": "node test/generate-test.js --require-host && npm run test:input-examples",
+    "test:input-examples": "node test/input-examples-test.js && npm run test:input-examples-behavior",
+    "test:input-examples-behavior": "node --test test/input-examples-behavior-test.js"
   },
   "petSdk": {
     "apiVersion": 1,
