@@ -69,6 +69,8 @@ manifest 的 `id` 与 `name`。
 | `sessions` | `readTransfer` | — | — | — | — |
 | `sessions` | `leave` | — | — | — | — |
 | `character` | `getCurrent` | B | B | B | — |
+| `character` | `getAnimationCatalog` | B | B | B | — |
+| `character` | `getAnimation` | B | B | B | — |
 | `character` | `getRealtime` | B | B | B | — |
 | `character` | `watch` | B | B | B | — |
 | `character` | `next` | B | B | B | — |
@@ -341,3 +343,14 @@ Validation status (2026-09-22): a private macOS arm64 signed-ASAR candidate pass
 `pet-ragdoll-renderer` 使用现有实验 `PetRender` 三方法和声明式资源接口；它定义的 `dataVersion: 2` 将衣服贴图、轮廓及头像都放在角色包，公共 provider 不含形象素材。这是 provider 私有数据版本的变化，不是宿主桥 API 升级。兼容基线为受邀 macOS arm64 候选 `0.26.0-ragdoll.1`，旧 `0.26.0` 不支持。宿主仍仅受邀分发，不因插件公开而公开宿主。
 
 The independent provider uses the existing experimental three-method render bridge. Provider-owned appearance data v2 moves clothing textures, contours and portraits into the owning appearance package; it does not add a host SDK method or a scaffold permission. Compatibility is limited to the invited realtime-capable macOS arm64 candidate `0.26.0-ragdoll.1`; older `0.26.0` is unsupported. Publishing a provider does not publish host installers or an npm SDK version.
+
+
+### 完整动作只读读取（未发布） / Complete animation reads (unreleased)
+
+`character.getAnimationCatalog()` 列出当前角色所有真实注册动作和变体（帧数、fps、loop、face、available），`character.getAnimation({state,variant?,offset?,limit?,signature?})` 分页读取原始 PNG/WebP 完整帧。tool / panel / block / HTML work 可用，experimental，复用 `character:read`；不授予 `appearance:render`、角色控制或任意文件访问。`getCurrent` 保留代表图语义，不等于完整动画。
+
+Use the catalog signature on every frame-page request and follow `nextOffset` until null. A page returns at most 24 frames / 6 MiB of raw bytes (2 MiB per frame); there is no sampling. `CHARACTER_ANIMATION_CHANGED` means discard the old load and refresh the catalog. Missing states reject `CHARACTER_STATE_UNAVAILABLE`; unavailable optional variants must not prevent idle playback. Catalog availability validates file metadata; bytes are validated on read. Filesystem paths and plugin ownership never appear in responses. Do not loop filesystem/SDK reads at render frequency.
+
+默认帧页 variant=0、offset=0、limit=24；目录最多256状态、每状态32变体、每动作4096帧、合计8192帧。目录/帧页限频60/240次每分钟，每方法同时最多2个请求。先探测两个方法；旧宿主回退代表图或自带素材，不宣称旧宿主支持。类型与文档更新不代表 npm 发布或宿主发布；最低已发布兼容版本仍未确定。基础模板保持原权限。
+
+Both methods are read-only and experimental, available in tool/panel/block/work under `character:read`. Feature-detect both methods or query capabilities. No released host compatibility, npm release, new default permission, marketplace listing, or public host distribution is claimed.
