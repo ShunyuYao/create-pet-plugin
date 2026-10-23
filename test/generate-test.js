@@ -51,6 +51,7 @@ try {
       `${kind}: package.json 依赖 @pet/plugin-types`);
 
     const m = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+    check(typeof m.description === 'string' && m.description.trim().length > 0, `${kind}: marketplace description is present`);
     for (const f of ['id', 'name', 'version', 'apiVersion', 'kind', 'permissions', 'entry']) {
       check(m[f] !== undefined, `${kind}: manifest 含 ${f}`);
     }

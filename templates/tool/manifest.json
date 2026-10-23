@@ -1,6 +1,7 @@
 {
   "id": "my-pet-plugin",
   "name": "我的插件",
+  "description": "用桌宠工具记录事项并安排提醒。",
   "version": "0.1.0",
   "apiVersion": 1,
   "updateReminders": false,
