@@ -114,7 +114,7 @@ try {
     check(true, '真实生成的主题 manifest / JSON 通过公开类型严格编译');
     if (hostDemo) {
       execFileSync(process.execPath, [path.join(typeRoot, 'test', 'check-host.js'), '--host', path.resolve(hostDemo),
-        '--readme', path.join(__dirname, '..', 'README.md')], { stdio: 'inherit' });
+        '--readme', path.join(__dirname, '..', 'docs', 'DEVELOPER_GUIDE.md')], { stdio: 'inherit' });
       check(true, '宿主、公开类型和脚手架能力文档三方一致');
     }
   }

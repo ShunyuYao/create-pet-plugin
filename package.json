@@ -8,7 +8,8 @@
   "files": [
     "index.js",
     "templates",
-    "README.md"
+    "README.md",
+    "docs"
   ],
   "license": "MIT",
   "repository": {
