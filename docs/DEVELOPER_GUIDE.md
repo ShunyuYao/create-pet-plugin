@@ -45,9 +45,14 @@ manifest 的 `id` 与 `name`。
 | `kind` | ✅ | 普通插件为 `tool` / `panel` / `asset` / `skill` / `settings` / `service` / `dashboard-card` 的非空子集；实验主题只能为 `["theme"]`，实时渲染插件只能为 `["appearance-renderer"]` |
 | `permissions` | — | 权限名数组，见 `@pet/plugin-types` 的 `PluginPermission`。联网必须逐域名写 `net:api.example.com`，没有宽泛的 `net` |
 | `minHostVersion` | — | 要求的最低宿主版本 |
+| `platforms` | — | 实验性平台／架构白名单，例如 `["darwin-arm64"]`；非空、不重复，省略表示不限制。须使用实际支持此约束的宿主，并与市场登记一致 |
 | `entry` | 视 kind | `kind` 含 `tool` 要 `entry.tool`；含 `panel` 要 `entry.panel.src`；含 `dashboard-card` 要 `entry.dashboardBlock.src`；含 `service` 要 `provides.service` |
 
 ## 上下文能力矩阵
+
+本机执行程序只应声明已打包并验证的平台。支持值为 `darwin-arm64`、`darwin-x64`、`win32-arm64`、`win32-x64`、`win32-ia32`、`linux-arm64`、`linux-x64`、`linux-arm`。默认样板不限制平台。`platforms` 是安装、更新和加载约束，不会安装缺失的二进制文件，也不能让旧宿主自动支持新增格式。
+
+Native executables must match the package's declared and verified platforms. Keep registry and ZIP `platforms` identical. Omission leaves legacy packages unrestricted; the field requires a supporting host and never downloads missing executables. Basic templates remain platform-neutral.
 
 普通插件使用 tool/panel/dashboard-card 三种上下文；专用 render 沙箱只提供 `pet.render`，不继承通用 SDK。上下文差异是权限与生命周期边界。下表与候选宿主的 `demo/core/plugin-runtime/sdk-surface.js` 对应；`apiVersion: 1` 不表示旧宿主支持后来增加的实验能力。
 
