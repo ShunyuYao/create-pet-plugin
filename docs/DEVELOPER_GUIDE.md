@@ -121,6 +121,10 @@ Native executables must match the package's declared and verified platforms. Kee
 | `ai` | `get` | B | — | — | — |
 | `ai` | `cancel` | B | — | — | — |
 | `ai` | `deliver` | B | — | — | — |
+| `conversation` | `bind` | B | — | — | — |
+| `conversation` | `getBinding` | B | — | — | — |
+| `conversation` | `unbind` | B | — | — | — |
+| `conversation` | `changed` | B | — | — | — |
 | `profile` | `getScope` | B | — | — | — |
 | `files` | `pick` | B | B | — | — |
 | `files` | `stat` | B | B | — | — |
@@ -429,3 +433,5 @@ await pet.pet.notify({
 通用消息接口已进入 0.30.2 macOS arm64 受邀渠道宿主；0.30.0/0.30.1 发布包不支持。Windows 需等待对应兼容宿主构建。仍应检测 `typeof pet.pet?.notify === 'function'`；旧宿主的 bubble 回退不保证聊天和驿站持久化，apiVersion 或类型包版本不能代替能力检查。本次仅同步源码文档，不代表 npm 包已发布。
 
 The generic tool-only message API accepts plugin-provided text without AI permission, an AI task ID, or a completed model result. It persists one chat message and hub reference and requests a bubble, enforcing scope, lifecycle and event deduplication. AI sharing is a convenience adapter over the same delivery channel. Per-plugin notification policy does not narrow the generic contract. The generic message API is available in the invitation-only macOS arm64 host 0.30.2; older releases lack it. Windows requires a matching compatible host build. No npm publication is implied.
+
+See the external primary conversation contract in pet-plugin-types: tool-only, conversation permission, declared start/poll/history/cancel service. This capability is unreleased; basic templates do not request it.
