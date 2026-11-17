@@ -107,6 +107,9 @@ Native executables must match the package's declared and verified platforms. Kee
 | `ui` | `openPanel` | A | — | — | — |
 | `ui` | `closePanel` | A | A | — | — |
 | `ui` | `setPanelPinned` | B | B | — | — |
+| `ui` | `getPanelBounds` | B | B | — | — |
+| `ui` | `setPanelBounds` | B | B | — | — |
+| `ui` | `setPanelHitRegions` | B | B | — | — |
 | `events` | `on` | A | A | A | — |
 | `events` | `emit` | A | A | A | — |
 | `scheduler` | `every` | A | — | — | — |
@@ -155,6 +158,20 @@ Native executables must match the package's declared and verified platforms. Kee
 | `(root)` | `context` | — | — | A | — |
 | `pet` | `notify` | B | — | — | — |
 | `ai` | `share` | B | — | — | — |
+| `worlds` | `list` | B | B | — | — |
+| `worlds` | `getState` | B | B | — | — |
+| `worlds` | `enable` | B | B | — | — |
+| `worlds` | `disable` | B | B | — | — |
+| `worlds` | `enter` | B | B | — | — |
+| `worlds` | `recall` | B | B | — | — |
+| `worlds` | `getView` | B | B | — | — |
+| `worlds` | `getEvents` | B | B | — | — |
+| `worlds` | `getProfile` | B | B | — | — |
+| `worlds` | `requestFriend` | B | B | — | — |
+| `worlds` | `getAiState` | B | B | — | — |
+| `worlds` | `getAgentState` | B | B | — | — |
+| `worlds` | `createAgentPairing` | B | B | — | — |
+| `worlds` | `revokeAgent` | B | B | — | — |
 <!-- sdk-surface:end -->
 
 对应精确类型为 `PetTool` / `PetPanel` / `PetBlock` / `PetRender`，编辑器里越界访问会直接报错。普通 SDK 调用返回 Promise；render 的 `submitFrame`/`fail` 返回 void，`onControl` 返回取消订阅函数，以对应类型签名为准。
@@ -435,3 +452,9 @@ await pet.pet.notify({
 The generic tool-only message API accepts plugin-provided text without AI permission, an AI task ID, or a completed model result. It persists one chat message and hub reference and requests a bubble, enforcing scope, lifecycle and event deduplication. AI sharing is a convenience adapter over the same delivery channel. Per-plugin notification policy does not narrow the generic contract. The generic message API is available in the invitation-only macOS arm64 host 0.30.2; older releases lack it. Windows requires a matching compatible host build. No npm publication is implied.
 
 See the external primary conversation contract in pet-plugin-types: tool-only, conversation permission, declared start/poll/history/cancel service. This capability is unreleased; basic templates do not request it.
+
+### Desktop panels (experimental, unreleased)
+
+Declare entry.panel.desktop:true with transparent:true. The ui permission grants tool/panel access to getPanelBounds(), setPanelBounds({x?,y?,width?,height?}), and setPanelHitRegions(Rect[]|null). Always feature-detect. Geometry uses DIP, dimensions 64–2000 are clamped to the display work area, and position persists. At most 64 local hit rectangles; [] passes through, null restores input. Host cursor polling recovers input on re-entry and closes cleanly on disable/crash. No other window IDs or private IPC are accepted. Hidden Electron tests cover IPC and native geometry, not OS click-through, stacking or Spaces. Source synchronization does not imply a released host or npm package.
+
+Existing worlds entries in the matrix require worlds:connect and remain experimental/unreleased; no caller-selected URLs or private context.
